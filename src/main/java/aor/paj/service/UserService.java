@@ -34,7 +34,7 @@ public class UserService {
 
 
     @POST
-    @Path("/")
+    @Path("/addUserDB")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
@@ -75,7 +75,7 @@ public class UserService {
         return response;
     }
     @PUT
-    @Path("/")
+    @Path("/updateUser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response newUpdateUser (@HeaderParam("token") String token, User updatedUser) {
@@ -115,7 +115,7 @@ public class UserService {
             }
 
         } else {
-            response = Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
+            response = Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized access").build();
         }
 
         return response;
@@ -134,7 +134,7 @@ public class UserService {
 
                 return Response.ok(user).build();
             } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
 
         } else {
@@ -144,7 +144,7 @@ public class UserService {
     }
 
     @GET
-    @Path("/")
+    @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getAllUsers(@HeaderParam("token") String token) {
@@ -179,7 +179,7 @@ public class UserService {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized access").build();
         }
 
-        }
+    }
 
     @GET
     @Path("/inactiveUsers")
@@ -332,7 +332,7 @@ public class UserService {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update user").build();
             }
         }else{
-        return Response.status(401).entity("Invalid credentials").build();
+            return Response.status(401).entity("Invalid credentials").build();
         }
     }
 
