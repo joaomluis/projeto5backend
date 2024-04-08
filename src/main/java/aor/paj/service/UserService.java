@@ -487,7 +487,7 @@ public class UserService {
     @GET
     @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsern(@PathParam("username")String username){
+    public Response getUser(@PathParam("username")String username){
         UserDetails userRequested=userBean.getUserDetails(username);
         if (userRequested==null) return Response.status(400).entity("Failed").build();
         return Response.status(200).entity(userRequested).build();

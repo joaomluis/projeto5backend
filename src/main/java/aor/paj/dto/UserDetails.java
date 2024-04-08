@@ -21,6 +21,9 @@ public class UserDetails {
     @XmlElement
     private String imgURL;
 
+    @XmlElement
+    private String typeOfUser;
+
 
     public UserDetails() {
         this.username = null;
@@ -29,10 +32,11 @@ public class UserDetails {
         this.lastName = null;
         this.phoneNumber = null;
         this.imgURL = null;
+        this.typeOfUser = null;
     }
 
-    public UserDetails(String username, String email, String firstName, String lastName, String phoneNumber,
-                String imgURL) {
+    public UserDetails(String username, String email, String firstName, String lastName,String imgURL, String phoneNumber,
+                 String typeOfUser) {
 
         this.username = username;
         this.email = email;
@@ -40,6 +44,7 @@ public class UserDetails {
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.imgURL = imgURL;
+        this.typeOfUser = typeOfUser;
 
     }
 
@@ -89,5 +94,13 @@ public class UserDetails {
 
     public void setImgURL(String imgURL) {
         this.imgURL = imgURL;
+    }
+
+    public String getTypeOfUser() {
+        return typeOfUser;
+    }
+
+    public void setTypeOfUser(String typeOfUser) {
+        this.typeOfUser = typeOfUser;
     }
 }

@@ -537,7 +537,8 @@ public class UserBean implements Serializable {
                 userEntity.getFirstName(),
                 userEntity.getLastName(),
                 userEntity.getImgURL(),
-                userEntity.getPhoneNumber()
+                userEntity.getPhoneNumber(),
+                userEntity.getTypeOfUser()
         );
     }
     return null;
