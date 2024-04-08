@@ -2,10 +2,7 @@ package aor.paj.service;
 
 import aor.paj.bean.TaskBean;
 import aor.paj.bean.UserBean;
-import aor.paj.dto.LoginDto;
-import aor.paj.dto.Task;
-import aor.paj.dto.User;
-import aor.paj.dto.UserDetails;
+import aor.paj.dto.*;
 
 import aor.paj.entity.UserEntity;
 import aor.paj.utils.EncryptHelper;
@@ -31,6 +28,7 @@ public class UserService {
 
     @Inject
     EncryptHelper encryptHelper;
+
 
 
     @POST
@@ -333,6 +331,39 @@ public class UserService {
             }
         }else{
             return Response.status(401).entity("Invalid credentials").build();
+        }
+    }
+
+    @PUT
+    @Path("/updatePassword")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updatePassword(@HeaderParam("token") String token, PasswordUpdateDto passwordUpdateDto) {
+        User user = userBean.getUserByToken(token);
+
+        String currentPassword = passwordUpdateDto.getCurrentPassword();
+        String newPassword = passwordUpdateDto.getNewPassword();
+        String confirmPassword = passwordUpdateDto.getConfirmPassword();
+
+        if (user != null) {
+            if (newPassword.equals(confirmPassword)) {
+                if (encryptHelper.checkPassword(currentPassword, user.getPassword())) {
+
+
+                    boolean updatedUserPassword = userBean.updatePassword(token, newPassword);
+                    if (updatedUserPassword) {
+                        return Response.status(Response.Status.OK).entity(user).build();
+                    } else {
+                        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update password").build();
+                    }
+                } else {
+                    return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid current password").build();
+                }
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Passwords don't match").build();
+            }
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
         }
     }
 

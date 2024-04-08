@@ -34,4 +34,8 @@ public class EncryptHelper {
         return s.toString();
     }
 
+    public boolean checkPassword(String currentPassword, String password) {
+
+        return encryptPassword(currentPassword).equals(password);
+    }
 }

@@ -237,6 +237,15 @@ public class UserBean implements Serializable {
 
     }
 
+    public boolean updatePassword (String token, String newPassword){
+        UserEntity userEntity = userDao.findUserByToken(token);
+        if (userEntity == null) {
+            return false;
+        }
+        userEntity.setPassword(encryptHelper.encryptPassword(newPassword));
+        return userDao.update(userEntity);
+    }
+
 
     /**
      * Update ao role do user, só disponivel para users do tipo product owner
