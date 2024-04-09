@@ -428,6 +428,9 @@ public class UserService {
         User userRequest = userBean.getUserByToken(token);
         Response response;
 
+        String dummyPassword = userBean.generateNewToken();
+        user.setPassword(dummyPassword);
+
         if(userRequest!= null && userRequest.getTypeOfUser().equals("product_owner")) {
 
 
