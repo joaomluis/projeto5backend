@@ -3,6 +3,8 @@ package aor.paj.dto;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.time.LocalDate;
+
 @XmlRootElement
 public class User{
     @XmlElement
@@ -25,6 +27,13 @@ public class User{
     private boolean isActive;
     @XmlElement
     private String typeOfUser;
+    @XmlElement
+    private boolean isConfirmed;
+    @XmlElement
+    private String confirmationToken;
+    @XmlElement
+    private LocalDate confirmationTokenDate;
+
 
 
     public User(String username, String password, String email, String firstName, String lastName,
@@ -124,6 +133,28 @@ public class User{
         this.typeOfUser = typeOfUser;
     }
 
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
 
+    public void setConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
+    }
+
+    public String getConfirmationToken() {
+        return confirmationToken;
+    }
+
+    public void setConfirmationToken(String confirmationToken) {
+        this.confirmationToken = confirmationToken;
+    }
+
+    public LocalDate getConfirmationTokenDate() {
+        return confirmationTokenDate;
+    }
+
+    public void setConfirmationTokenDate(LocalDate confirmationTokenDate) {
+        this.confirmationTokenDate = confirmationTokenDate;
+    }
 }
 

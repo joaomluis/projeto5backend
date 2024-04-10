@@ -638,6 +638,8 @@ public class UserBean implements Serializable {
             admin.setPhoneNumber("123456789");
             admin.setImgURL("https://t4.ftcdn.net/jpg/04/75/00/99/240_F_475009987_zwsk4c77x3cTpcI3W1C1LU4pOSyPKaqi.jpg");
             admin.setTypeOfUser("product_owner");
+            admin.setConfirmed(true);
+
 
             register(admin);
         }
@@ -654,6 +656,7 @@ public class UserBean implements Serializable {
             deletedUser.setImgURL("https://www.iconpacks.net/icons/1/free-remove-user-icon-303-thumb.png");
             deletedUser.setTypeOfUser("developer");
             deletedUser.setActive(false);
+            deletedUser.setConfirmed(true);
 
             register(deletedUser);
         }

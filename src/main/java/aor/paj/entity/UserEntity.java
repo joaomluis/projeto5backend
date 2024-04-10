@@ -3,6 +3,7 @@ package aor.paj.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -47,6 +48,16 @@ public class UserEntity implements Serializable{
 
 	@Column(name="typeOfUser", nullable=false, unique = false, updatable = true)
 	private String typeOfUser;
+
+	@Column(name="isConfirmed", nullable=false, unique = false, updatable = true)
+	private boolean isConfirmed;
+
+	@Column (name="confirmationToken", nullable=true, unique = false, updatable = true)
+	private String confirmationToken;
+
+	@Column (name="confirmationTokenDate", nullable=true, unique = false, updatable = true)
+	private LocalDate confirmationTokenDate;
+
 
 
 	@OneToMany(mappedBy = "owner")
@@ -146,5 +157,29 @@ public class UserEntity implements Serializable{
 
 	public void setTypeOfUser(String typeOfUser) {
 		this.typeOfUser = typeOfUser;
+	}
+
+	public boolean isConfirmed() {
+		return isConfirmed;
+	}
+
+	public void setConfirmed(boolean confirmed) {
+		isConfirmed = confirmed;
+	}
+
+	public String getConfirmationToken() {
+		return confirmationToken;
+	}
+
+	public void setConfirmationToken(String confirmationToken) {
+		this.confirmationToken = confirmationToken;
+	}
+
+	public LocalDate getConfirmationTokenDate() {
+		return confirmationTokenDate;
+	}
+
+	public void setConfirmationTokenDate(LocalDate confirmationTokenDate) {
+		this.confirmationTokenDate = confirmationTokenDate;
 	}
 }

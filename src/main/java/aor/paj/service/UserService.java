@@ -527,4 +527,6 @@ public class UserService {
         return Response.status(200).entity(userRequested).build();
     }
 
+
+
 }
