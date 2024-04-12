@@ -561,7 +561,7 @@ public class UserService {
 
         if (user != null) {
             if (newPasswordConverted.equals(confirmPasswordConverted)) {
-                boolean updatedUserPassword = userBean.resetPassword(confirmationToken, newPassword);
+                boolean updatedUserPassword = userBean.resetPassword(confirmationToken, confirmPasswordConverted);
                 if (updatedUserPassword) {
                     return Response.status(Response.Status.OK).entity("Password updated").build();
                 } else {

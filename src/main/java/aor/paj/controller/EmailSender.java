@@ -33,16 +33,16 @@ public class EmailSender {
                 });
 
         try {
-            System.out.println("Sending email...");
+
             Message message = new MimeMessage(session);
-            System.out.println("Message created");
+
             message.setFrom(new InternetAddress(username));
-            System.out.println("From set");
+
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to));
-            System.out.println("Recipients set");
+
             message.setSubject(subject);
-            System.out.println("Subject set");
+
 
             // Set the email content to HTML
             message.setContent(content, "text/html; charset=utf-8");
@@ -79,7 +79,7 @@ public class EmailSender {
         String content = "<h1>Olá, " + userName + "!</h1>" +
                 "<p>Para redefinir sua senha, clique no link abaixo:</p>" +
                 "<p><a href=\"" + resetLink + "\">Redefinir senha</a></p>"+
-                "<p>Este link apenas é válido por 1 hora.</p>"+
+                "<p>Este link apenas é válido por 20 minutos.</p>"+
                 "<p>Se você não pretende restaurar a sua palavra-passe, por favor ignore este email.</p>";
         sendEmail(to, subject, content);
     }

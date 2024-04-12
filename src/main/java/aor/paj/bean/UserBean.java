@@ -574,35 +574,6 @@ public class UserBean implements Serializable {
     }
 
 
-        //método para validar um user novo e dependendo da verificação em que falhar manda uma resposta diferente
-    public int validateUserRegister(String username,String password, String email, String firstName, String lastName, String phoneNumber){
-
-        final int EMPTY_FIELDS=0, USERNAME_EXISTS=1, EMAIL_EXISTS=2,INVALID_EMAIL=3,INVALID_PHONE=4,USER_VALIDATE=10;
-        int VALIDATION_STATE=USER_VALIDATE;
-
-        if(username.equals("") || password.equals("") || email.equals("") || firstName.equals("") || lastName.equals("") || phoneNumber.equals("")) {
-
-            VALIDATION_STATE= EMPTY_FIELDS;
-        }
-        else if(!isValidEmail(email)){
-            VALIDATION_STATE=INVALID_EMAIL;
-        }
-        else if (!isValidPhoneNumber(phoneNumber)){
-            VALIDATION_STATE=INVALID_PHONE;
-        }
-        else{
-            UserEntity userByUsername = userDao.findUserByUsername(username);
-            UserEntity userByEmail = userDao.findUserByEmail(email);
-
-            if(userByUsername != null){
-                VALIDATION_STATE = USERNAME_EXISTS;
-            }else if(userByEmail != null){
-                VALIDATION_STATE = EMAIL_EXISTS;
-            }
-        }
-        return VALIDATION_STATE;
-    }
-
     //Recebe uma string e vê se é um número de telefone válido
     public boolean isValidPhoneNumber(String phoneNumber){
         boolean valideNumber=false;
@@ -690,7 +661,7 @@ public class UserBean implements Serializable {
 
         String token = generateNewToken();
         userEntity.setConfirmationToken(token);
-        userEntity.setConfirmationTokenDate(LocalDateTime.now().plusMinutes(24));
+        userEntity.setConfirmationTokenDate(LocalDateTime.now().plusMinutes(20));
         userDao.update(userEntity);
 
         sendPasswordResetEmail (email,
