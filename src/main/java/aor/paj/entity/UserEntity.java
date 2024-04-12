@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -13,6 +14,7 @@ import java.util.Set;
 @NamedQuery(name = "User.findUserByToken", query = "SELECT DISTINCT u FROM UserEntity u WHERE u.token = :token")
 @NamedQuery(name = "User.findAllUsers", query = "SELECT u FROM UserEntity u " )
 @NamedQuery(name="User.findUserByName", query = "SELECT u FROM UserEntity u WHERE u.firstName=:name OR u.lastName = :name")
+@NamedQuery(name="User.findUserByConfirmationToken", query = "SELECT u FROM UserEntity u WHERE u.confirmationToken = :confirmationToken")
 public class UserEntity implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -56,7 +58,7 @@ public class UserEntity implements Serializable{
 	private String confirmationToken;
 
 	@Column (name="confirmationTokenDate", nullable=true, unique = false, updatable = true)
-	private LocalDate confirmationTokenDate;
+	private LocalDateTime confirmationTokenDate;
 
 
 
@@ -175,11 +177,11 @@ public class UserEntity implements Serializable{
 		this.confirmationToken = confirmationToken;
 	}
 
-	public LocalDate getConfirmationTokenDate() {
+	public LocalDateTime getConfirmationTokenDate() {
 		return confirmationTokenDate;
 	}
 
-	public void setConfirmationTokenDate(LocalDate confirmationTokenDate) {
+	public void setConfirmationTokenDate(LocalDateTime confirmationTokenDate) {
 		this.confirmationTokenDate = confirmationTokenDate;
 	}
 }

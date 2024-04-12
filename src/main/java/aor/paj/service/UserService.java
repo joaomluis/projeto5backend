@@ -528,5 +528,52 @@ public class UserService {
     }
 
 
+    @POST
+    @Path("/recoverPassword/{email}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response recoverPassword(@PathParam("email") String email) {
+        User userRequestingMail = userBean.getUserByEmail(email);
+
+        if (userRequestingMail != null) {
+
+            userBean.recoverPassword(email);
+
+
+
+            return Response.status(200).entity("Email sent").build();
+        } else {
+            return Response.status(400).entity("Email not found").build();
+        }
+
+    }
+
+    @PUT
+    @Path("/resetPassword/{confirmationToken}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response resetPassword(@PathParam("confirmationToken") String confirmationToken, String newPassword) {
+        User user = userBean.getUserByConfirmationToken(confirmationToken);
+
+        JsonObject jsonObject = Json.createReader(new StringReader(newPassword)).readObject();
+        String newPasswordConverted = jsonObject.getString("newPassword");
+        String confirmPasswordConverted = jsonObject.getString("confirmPassword");
+
+        if (user != null) {
+            if (newPasswordConverted.equals(confirmPasswordConverted)) {
+                boolean updatedUserPassword = userBean.resetPassword(confirmationToken, newPassword);
+                if (updatedUserPassword) {
+                    return Response.status(Response.Status.OK).entity("Password updated").build();
+                } else {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update password").build();
+                }
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Passwords don't match").build();
+            }
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
+        }
+    }
+
 
 }

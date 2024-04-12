@@ -1,5 +1,6 @@
 package aor.paj.bean;
 
+import aor.paj.controller.EmailSender;
 import aor.paj.dao.CategoryDao;
 import aor.paj.dao.TaskDao;
 import aor.paj.dao.UserDao;
@@ -36,9 +37,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import static aor.paj.controller.EmailSender.sendEmail;
+import static aor.paj.controller.EmailSender.sendPasswordResetEmail;
 
 @Singleton
 public class UserBean implements Serializable {
@@ -284,6 +289,20 @@ public class UserBean implements Serializable {
         return u;
     }
 
+    public User getUserByEmail(String email) {
+        UserEntity userEntity = userDao.findUserByEmail(email);
+        User u = null;
+        u = convertUserEntityToDto(userEntity);
+        return u;
+    }
+
+    public User getUserByConfirmationToken(String token) {
+        UserEntity userEntity = userDao.findUserByConfirmationToken(token);
+        User u = null;
+        u = convertUserEntityToDto(userEntity);
+        return u;
+    }
+
 
     public String generateNewToken() {
         SecureRandom secureRandom = new SecureRandom();
@@ -347,6 +366,7 @@ public class UserBean implements Serializable {
         userEntity.setLastName(user.getLastName());
         userEntity.setIsActive(true);
         userEntity.setTypeOfUser(user.getTypeOfUser());
+        userEntity.setConfirmed(user.isConfirmed());
         return userEntity;
     }
 
@@ -660,5 +680,35 @@ public class UserBean implements Serializable {
 
             register(deletedUser);
         }
+    }
+
+    public boolean recoverPassword (String email){
+        UserEntity userEntity = userDao.findUserByEmail(email);
+        if (userEntity == null) {
+            return false;
+        }
+
+        String token = generateNewToken();
+        userEntity.setConfirmationToken(token);
+        userEntity.setConfirmationTokenDate(LocalDateTime.now().plusMinutes(24));
+        userDao.update(userEntity);
+
+        sendPasswordResetEmail (email,
+                userEntity.getUsername(),
+                "http://localhost:3000/auth/define-password/" + token);
+        return true;
+    }
+
+    public boolean resetPassword (String token, String newPassword){
+        UserEntity userEntity = userDao.findUserByConfirmationToken(token);
+        if (userEntity == null) {
+            return false;
+        } else if (LocalDateTime.now().isAfter(userEntity.getConfirmationTokenDate())) {
+            return false;
+        }
+        userEntity.setPassword(encryptHelper.encryptPassword(newPassword));
+        userEntity.setConfirmationToken(null);
+        userEntity.setConfirmationTokenDate(null);
+        return userDao.update(userEntity);
     }
 }

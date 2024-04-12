@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @XmlRootElement
 public class User{
@@ -32,7 +33,7 @@ public class User{
     @XmlElement
     private String confirmationToken;
     @XmlElement
-    private LocalDate confirmationTokenDate;
+    private LocalDateTime confirmationTokenDate;
 
 
 
@@ -149,11 +150,11 @@ public class User{
         this.confirmationToken = confirmationToken;
     }
 
-    public LocalDate getConfirmationTokenDate() {
+    public LocalDateTime getConfirmationTokenDate() {
         return confirmationTokenDate;
     }
 
-    public void setConfirmationTokenDate(LocalDate confirmationTokenDate) {
+    public void setConfirmationTokenDate(LocalDateTime confirmationTokenDate) {
         this.confirmationTokenDate = confirmationTokenDate;
     }
 }
