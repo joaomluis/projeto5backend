@@ -63,19 +63,19 @@ public class EmailSender {
         }
     }
     public static void sendVerificationEmail(String to, String userName, String verificationLink) {
-        String subject = "Verificação de conta";
+        String subject = "Verificação de conta - AgileUp";
         String content = "<h1>Olá, " + userName + "!</h1>" +
 
                 "<p>Para verificar a sua conta, clique no link abaixo:</p>" +
                 "<p><a href=\"" + verificationLink + "\">Verificar conta</a></p>"+
-                "<p>Este link apenas é válido por 1 hora.</p>"+
+                "<p>Este link apenas é válido por 1 dia.</p>"+
                 "<p>Se você não se registou, por favor ignore este email.</p>";
 
         sendEmail(to, subject, content);
     }
 
     public static void sendPasswordResetEmail(String to, String userName, String resetLink) {
-        String subject = "Redefinição de senha";
+        String subject = "Redefinição de senha - AgileUp";
         String content = "<h1>Olá, " + userName + "!</h1>" +
                 "<p>Para redefinir sua senha, clique no link abaixo:</p>" +
                 "<p><a href=\"" + resetLink + "\">Redefinir senha</a></p>"+

@@ -575,5 +575,36 @@ public class UserService {
         }
     }
 
+    @PUT
+    @Path("/confirmAccount/{confirmationToken}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response confirmAccount(@PathParam("confirmationToken") String confirmationToken, String newPassword) {
+        User user = userBean.getUserByConfirmationToken(confirmationToken);
+
+        JsonObject jsonObject = Json.createReader(new StringReader(newPassword)).readObject();
+        String newPasswordConverted = jsonObject.getString("newPassword");
+        String confirmPasswordConverted = jsonObject.getString("confirmPassword");
+
+
+        if (user != null) {
+            if (!confirmationToken.equals(user.getConfirmationToken())) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid token").build();
+            }
+                if (newPasswordConverted.equals(confirmPasswordConverted)) {
+                    boolean updatedUserPassword = userBean.confirmAccount(confirmationToken, confirmPasswordConverted);
+                    if (updatedUserPassword) {
+                        return Response.status(Response.Status.OK).entity("Account registered successfully").build();
+                    } else {
+                        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to confirm account").build();
+                    }
+                } else {
+                    return Response.status(Response.Status.BAD_REQUEST).entity("Passwords don't match").build();
+                }
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
+        }
+
+    }
 
 }
