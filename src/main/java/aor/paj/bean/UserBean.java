@@ -697,4 +697,19 @@ public class UserBean implements Serializable {
         userEntity.setConfirmationTokenDate(null);
         return userDao.update(userEntity);
     }
+
+    public void resendVerificationEmail(String username) {
+        UserEntity userEntity = userDao.findUserByUsername(username);
+        if (userEntity != null) {
+            String confirmationToken = generateNewToken();
+            userEntity.setConfirmationToken(confirmationToken);
+            userEntity.setConfirmationTokenDate(LocalDateTime.now().plusDays(1));
+            userDao.update(userEntity);
+
+            sendVerificationEmail(userEntity.getEmail(),
+                    userEntity.getUsername(),
+                    "http://localhost:3000/auth/define-password/verify/" + confirmationToken);
+        }
+    }
 }
+

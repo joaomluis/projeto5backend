@@ -604,7 +604,39 @@ public class UserService {
         } else {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
         }
+    }
 
+    @POST
+    @Path("/resendVerificationEmail")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response resendVerificationEmail(@HeaderParam("token") String token, String username) {
+
+        JsonObject jsonObject = Json.createReader(new StringReader(username)).readObject();
+        String usernamveConverted = jsonObject.getString("username");
+
+
+
+        if (token == null || usernamveConverted == null) {
+            return Response.status(400).entity("Token or username is missing").build();
+        }
+
+        User userRequestingResend = userBean.getUserByToken(token);
+        if (userRequestingResend == null || !userRequestingResend.getTypeOfUser().equals("product_owner")) {
+            return Response.status(401).entity("Unauthorized").build();
+        }
+
+        User userToGetMail = userBean.getUserByUsername(usernamveConverted);
+        if (userToGetMail == null) {
+            return Response.status(404).entity("User not found").build();
+        }
+
+        if (!userToGetMail.isConfirmed()) {
+            userBean.resendVerificationEmail(usernamveConverted);
+            return Response.status(200).entity("Email sent").build();
+        } else {
+            return Response.status(400).entity("User already verified").build();
+        }
     }
 
 }
