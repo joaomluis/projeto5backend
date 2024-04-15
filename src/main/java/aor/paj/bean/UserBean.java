@@ -14,6 +14,8 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,6 +33,8 @@ import static aor.paj.controller.EmailSender.sendVerificationEmail;
 
 @Singleton
 public class UserBean implements Serializable {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @EJB
     UserDao userDao;
@@ -56,6 +60,9 @@ public class UserBean implements Serializable {
                 String token = generateNewToken();
                 userEntity.setToken(token);
                 User loggedInUser = (convertUserEntityToUserLogged(userEntity));
+
+                logger.info("User " + user.getUsername() + " logged in");
+
                 return loggedInUser;
             }
         }
