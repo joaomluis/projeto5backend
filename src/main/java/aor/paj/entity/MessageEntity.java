@@ -3,6 +3,7 @@ package aor.paj.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="message")
@@ -14,14 +15,22 @@ public class MessageEntity implements Serializable {
     @Column(name = "id", nullable = false, unique = true, updatable = false)
     private Long id;
 
-    @Column(name = "sender", nullable = false, unique = false, updatable = true)
-    private String sender;
+    @ManyToOne
+    @JoinColumn(name = "sender", nullable = false, unique = false, updatable = true)
+    private UserEntity sender;
 
-    @Column(name = "recipient", nullable = false, unique = false, updatable = true)
-    private String recipient;
+    @Column (name = "sent_timestamp", nullable = false, unique = false, updatable = true)
+    private LocalDateTime sentTimestamp;
+
+    @ManyToOne
+    @JoinColumn(name = "recipient", nullable = false, unique = false, updatable = true)
+    private UserEntity recipient;
 
     @Column(name = "content", nullable = false, unique = false, updatable = true)
     private String content;
+
+    @Column(name = "is_read", nullable = false, unique = false, updatable = true)
+    private boolean isRead;
 
     public MessageEntity() {
     }
@@ -34,19 +43,19 @@ public class MessageEntity implements Serializable {
         this.id = id;
     }
 
-    public String getSender() {
+    public UserEntity getSender() {
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(UserEntity sender) {
         this.sender = sender;
     }
 
-    public String getRecipient() {
+    public UserEntity getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(String recipient) {
+    public void setRecipient(UserEntity recipient) {
         this.recipient = recipient;
     }
 
@@ -56,5 +65,21 @@ public class MessageEntity implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public LocalDateTime getSentTimestamp() {
+        return sentTimestamp;
+    }
+
+    public void setSentTimestamp(LocalDateTime sentTimestamp) {
+        this.sentTimestamp = sentTimestamp;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
     }
 }
