@@ -7,16 +7,23 @@ import aor.paj.entity.MessageEntity;
 import aor.paj.entity.UserEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Singleton
 public class MessageBean {
 
     @EJB
-    private MessageDao messageDao;
+    MessageDao messageDao;
     @EJB
-    private UserDao userDao;
+    UserDao userDao;
+
+    @Inject
+    UserBean userBean;
 
     public MessageBean() {
     }
@@ -26,12 +33,16 @@ public class MessageBean {
         UserEntity senderEntity = userDao.findUserByUsername(sender);
         UserEntity recipientEntity = userDao.findUserByUsername(recipient);
 
+        Date idTime=new Date();
 
         MessageEntity message = new MessageEntity();
+        message.setSentTimestamp(LocalDateTime.now());
+        message.setContent(content);
+        message.setRead(false);
         message.setSender(senderEntity);
         message.setRecipient(recipientEntity);
-        message.setContent(content);
-        message.setSentTimestamp(LocalDateTime.now());
+        message.setId(idTime.getTime());
+
         messageDao.persist(message);
     }
 
@@ -42,5 +53,32 @@ public class MessageBean {
         messageEntity.setContent(message.getContent());
         messageEntity.setRead(message.isRead());
         return messageEntity;
+    }
+
+    private Message convertToDto(MessageEntity messageEntity) {
+        Message message = new Message();
+        message.setId(messageEntity.getId());
+        message.setSender(userBean.convertUserEntityToDtoForTask(messageEntity.getSender()));
+        message.setSentTimestamp(messageEntity.getSentTimestamp());
+        message.setRecipient(userBean.convertUserEntityToDtoForTask(messageEntity.getRecipient()));
+        message.setContent(messageEntity.getContent());
+        message.setRead(messageEntity.isRead());
+        return message;
+    }
+
+    public ArrayList<Message> getMessages(String sender, String recipient) {
+        List<MessageEntity> messageEntities = messageDao.findMessagesBetweenTwoUsers(sender, recipient);
+
+        ArrayList<Message> messages = new ArrayList<>();
+
+        for (MessageEntity messageEntity : messageEntities) {
+            Message messageDto = convertToDto(messageEntity);
+
+            messages.add(messageDto);
+
+        }
+
+        return messages;
+
     }
 }

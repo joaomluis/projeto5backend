@@ -22,14 +22,13 @@ public class Message {
     @XmlElement
     private boolean isRead;
 
-    public Message (User sender, LocalDateTime sentTimestamp, User recipient, String content) {
+    public Message () {
 
         Date idTime=new Date();
         this.id = idTime.getTime();
-        this.sender = sender;
-        this.sentTimestamp = sentTimestamp;
-        this.recipient = recipient;
-        this.content = content;
+        this.sender = null;
+        this.sentTimestamp = null;
+        this.content = null;
         this.isRead = false;
     }
 
