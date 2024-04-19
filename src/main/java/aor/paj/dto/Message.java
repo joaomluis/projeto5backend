@@ -12,11 +12,11 @@ public class Message {
     @XmlElement
     private long id;
     @XmlElement
-    private User sender;
+    private String sender;
     @XmlElement
     private LocalDateTime sentTimestamp;
     @XmlElement
-    private User recipient;
+    private String recipient;
     @XmlElement
     private String content;
     @XmlElement
@@ -40,19 +40,19 @@ public class Message {
         this.id = id;
     }
 
-    public User getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 
-    public User getRecipient() {
+    public String getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(User recipient) {
+    public void setRecipient(String recipient) {
         this.recipient = recipient;
     }
 

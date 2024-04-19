@@ -5,10 +5,17 @@ import aor.paj.dao.UserDao;
 import aor.paj.dto.Message;
 import aor.paj.entity.MessageEntity;
 import aor.paj.entity.UserEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.websocket.Session;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +35,7 @@ public class MessageBean {
     public MessageBean() {
     }
 
-    public void createMessage(String content, String sender, String recipient) {
+    public void createMessage(Session session, String content, String sender, String recipient) {
 
         UserEntity senderEntity = userDao.findUserByUsername(sender);
         UserEntity recipientEntity = userDao.findUserByUsername(recipient);
@@ -44,6 +51,18 @@ public class MessageBean {
         message.setId(idTime.getTime());
 
         messageDao.persist(message);
+
+        Message messageDto = convertToDto(message);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            String messageJson = mapper.writeValueAsString(messageDto);
+            System.out.println("Sending message back to client: " + messageJson);
+            session.getBasicRemote().sendText(messageJson);
+        } catch (IOException e) {
+            System.out.println("Error sending message back to client: " + e.getMessage());
+        }
     }
 
     private MessageEntity convertToEntity(Message message) {
@@ -58,9 +77,9 @@ public class MessageBean {
     private Message convertToDto(MessageEntity messageEntity) {
         Message message = new Message();
         message.setId(messageEntity.getId());
-        message.setSender(userBean.convertUserEntityToDtoForTask(messageEntity.getSender()));
+        message.setSender(messageEntity.getSender().getUsername());
         message.setSentTimestamp(messageEntity.getSentTimestamp());
-        message.setRecipient(userBean.convertUserEntityToDtoForTask(messageEntity.getRecipient()));
+        message.setRecipient(messageEntity.getRecipient().getUsername());
         message.setContent(messageEntity.getContent());
         message.setRead(messageEntity.isRead());
         return message;

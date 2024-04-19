@@ -71,13 +71,9 @@ public class Notifier {
             return;
         }
 
-        messageBean.createMessage(content, sender, recipient);
+        messageBean.createMessage(session, content, sender, recipient);
 
 
-        try {
-            session.getBasicRemote().sendText("ack");
-        } catch (IOException e) {
-            System.out.println("Something went wrong!");
-        }
+
     }
 }

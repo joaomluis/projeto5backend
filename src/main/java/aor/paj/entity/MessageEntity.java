@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name="message")
-@NamedQuery(name="Message.findMessagesBetweenTwoUsers", query="SELECT m FROM MessageEntity m WHERE (m.sender.username = :username1 AND m.recipient.username = :username2) OR (m.sender.username = :username2 AND m.recipient.username = :username1) ORDER BY m.sentTimestamp DESC")
+@NamedQuery(name="Message.findMessagesBetweenTwoUsers", query="SELECT m FROM MessageEntity m WHERE (m.sender.username = :username1 AND m.recipient.username = :username2) OR (m.sender.username = :username2 AND m.recipient.username = :username1) ORDER BY m.sentTimestamp ASC")
 public class MessageEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
