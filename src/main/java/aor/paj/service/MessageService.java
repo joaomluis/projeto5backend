@@ -36,6 +36,7 @@ public class MessageService {
             return Response.status(Response.Status.NOT_FOUND).entity("Recipient not found").build();
         } else {
             messages = messageBean.getMessages(sender, recipient);
+            messageBean.markMessagesAsRead(sender, recipient);
         }
 
 

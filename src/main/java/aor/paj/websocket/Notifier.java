@@ -13,7 +13,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Singleton
@@ -23,8 +23,11 @@ public class Notifier {
     @EJB
     private MessageBean messageBean;
 
-    HashMap<String, Session> sessions = new HashMap<String, Session>();
+    ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 
+    public Session getSessionByToken(String token) {
+        return sessions.get(token);
+    }
 
     public void send(String token, String msg){
         Session session = sessions.get(token);
@@ -48,11 +51,9 @@ public class Notifier {
     public void toDoOnClose(Session session, CloseReason reason){
         System.out.println("Websocket session is closed with CloseCode: "+
                 reason.getCloseCode() + ": "+reason.getReasonPhrase());
-        for(String key:sessions.keySet()){
-            if(sessions.get(key) == session)
-                sessions.remove(key);
-        }
+        sessions.entrySet().removeIf(entry -> entry.getValue().equals(session));
     }
+
     @OnMessage
     public void toDoOnMessage(Session session, String msg){
         System.out.println("A new message is received: "+ msg);
@@ -71,7 +72,7 @@ public class Notifier {
             return;
         }
 
-        messageBean.createMessage(session, content, sender, recipient);
+        messageBean.handleMessage(session, content, sender, recipient);
 
 
 

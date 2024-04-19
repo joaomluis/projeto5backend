@@ -5,6 +5,7 @@ import aor.paj.dao.UserDao;
 import aor.paj.dto.Message;
 import aor.paj.entity.MessageEntity;
 import aor.paj.entity.UserEntity;
+import aor.paj.websocket.Notifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.ejb.EJB;
@@ -28,6 +29,8 @@ public class MessageBean {
     MessageDao messageDao;
     @EJB
     UserDao userDao;
+    @EJB
+    Notifier notifier;
 
     @Inject
     UserBean userBean;
@@ -35,34 +38,67 @@ public class MessageBean {
     public MessageBean() {
     }
 
-    public void createMessage(Session session, String content, String sender, String recipient) {
+    public void handleMessage(Session session, String content, String sender, String recipient) {
 
         UserEntity senderEntity = userDao.findUserByUsername(sender);
         UserEntity recipientEntity = userDao.findUserByUsername(recipient);
+
+        if (senderEntity == null || recipientEntity == null) {
+            System.out.println("Error: sender or recipient not found");
+            return;
+        }
+
+        // Verifica se o outro user tmb tem o chat aberto
+        String recipientToken = recipient + "-" + sender;
+        Session recipientSession = notifier.getSessionByToken(recipientToken);
+        boolean isRead = recipientSession != null;
+
+        MessageEntity message = createMessage(senderEntity, recipientEntity, content, isRead);
+        Message messageDto = convertToDto(message);
+
+        try  {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            String messageJson = mapper.writeValueAsString(messageDto);
+
+            session.getBasicRemote().sendText(messageJson);
+
+
+            // Se sim manda a mensagem pelo ws
+            if (recipientSession != null) {
+
+                recipientSession.getBasicRemote().sendText(messageJson);
+            }
+        } catch (IOException e) {
+            System.out.println("Error sending message back to client: " + e.getMessage());
+        }
+    }
+
+    public void markMessagesAsRead(String sender, String recipient) {
+        List<MessageEntity> messages = messageDao.findMessagesBetweenTwoUsers(sender, recipient);
+        for (MessageEntity message : messages) {
+            if (!message.isRead() && message.getRecipient().getUsername().equals(recipient)) {
+                message.setRead(true);
+                messageDao.merge(message);
+            }
+        }
+    }
+
+    private MessageEntity createMessage (UserEntity sender, UserEntity recipient, String content,boolean isRead) {
 
         Date idTime=new Date();
 
         MessageEntity message = new MessageEntity();
         message.setSentTimestamp(LocalDateTime.now());
         message.setContent(content);
-        message.setRead(false);
-        message.setSender(senderEntity);
-        message.setRecipient(recipientEntity);
+        message.setRead(isRead);
+        message.setSender(sender);
+        message.setRecipient(recipient);
         message.setId(idTime.getTime());
 
         messageDao.persist(message);
 
-        Message messageDto = convertToDto(message);
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            String messageJson = mapper.writeValueAsString(messageDto);
-            System.out.println("Sending message back to client: " + messageJson);
-            session.getBasicRemote().sendText(messageJson);
-        } catch (IOException e) {
-            System.out.println("Error sending message back to client: " + e.getMessage());
-        }
+        return message;
     }
 
     private MessageEntity convertToEntity(Message message) {
