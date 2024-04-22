@@ -6,6 +6,7 @@ import aor.paj.bean.TaskBean;
 import aor.paj.bean.UserBean;
 import aor.paj.dto.Category;
 import aor.paj.dto.Task;
+import aor.paj.websocket.CategoryWebsocket;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -15,14 +16,15 @@ import jakarta.ws.rs.core.Response;
 @Path("/categories")
 public class CategoryService {
 
-    @Inject
-    TaskBean taskBean;
 
     @Inject
     UserBean userBean;
 
     @Inject
     CategoryBean categoryBean;
+
+    @Inject
+    CategoryWebsocket categoryWebsocket;
 
 
     @POST
@@ -44,6 +46,7 @@ public class CategoryService {
 
         } else if (categoryBean.addCategory(token, category)) {
             response = Response.status(200).entity("A new category is created").build();
+            categoryWebsocket.notifyCategoriesUpdated();
 
         } else {
             response = Response.status(403).entity("Invalid Token").build();
@@ -73,6 +76,7 @@ public class CategoryService {
 
         } else if (categoryBean.updateCategory(token, id, category)) {
             response = Response.status(200).entity("Category updated sucessfully").build();
+            categoryWebsocket.notifyCategoriesUpdated();
 
         } else
             response = Response.status(400).entity("Failed to update category").build();
@@ -100,6 +104,8 @@ public class CategoryService {
 
         } else if (categoryBean.deleteCategory(token, id)) {
             response = Response.status(200).entity("Category deleted successfully").build();
+            categoryWebsocket.notifyCategoriesUpdated();
+
 
         } else {
             response = Response.status(400).entity("Failed to delete category").build();

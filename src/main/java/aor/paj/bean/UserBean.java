@@ -658,6 +658,112 @@ public class UserBean implements Serializable {
 
             register(deletedUser);
         }
+
+        UserEntity userEntity3 = userDao.findUserByUsername("Celso_dev");
+        if (userEntity3 == null) {
+            User celso = new User();
+            celso.setUsername("Celso_dev");
+            celso.setPassword("123");
+            celso.setEmail("celso@dev.com");
+            celso.setFirstName("Celso");
+            celso.setLastName("Developer");
+            celso.setPhoneNumber("123456789");
+            celso.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celso.setTypeOfUser("developer");
+            celso.setActive(true);
+            celso.setConfirmed(true);
+        }
+
+        UserEntity userEntity4 = userDao.findUserByUsername("Celso_sm");
+        if (userEntity4 == null) {
+            User celsoSm = new User();
+            celsoSm.setUsername("Celso_sm");
+            celsoSm.setPassword("123");
+            celsoSm.setEmail("celsoSm@sm.com");
+            celsoSm.setFirstName("Celso");
+            celsoSm.setLastName("SM");
+            celsoSm.setPhoneNumber("123456789");
+            celsoSm.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celsoSm.setTypeOfUser("scrum_master");
+            celsoSm.setActive(true);
+            celsoSm.setConfirmed(true);
+        }
+
+        UserEntity userEntity5 = userDao.findUserByUsername("Celso_po");
+        if (userEntity5 == null) {
+            User celsoPo = new User();
+            celsoPo.setUsername("Celso_po");
+            celsoPo.setPassword("123");
+            celsoPo.setEmail("celso@po.com");
+            celsoPo.setFirstName("Celso");
+            celsoPo.setLastName("PO");
+            celsoPo.setPhoneNumber("123456789");
+            celsoPo.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celsoPo.setTypeOfUser("product_owner");
+            celsoPo.setActive(true);
+            celsoPo.setConfirmed(true);
+        }
+
+        UserEntity userEntity6 = userDao.findUserByUsername("Celsinho");
+        if (userEntity6 == null) {
+            User celsinho = new User();
+            celsinho.setUsername("Celsinho");
+            celsinho.setPassword("123");
+            celsinho.setEmail("celsinho@agileup.com");
+            celsinho.setFirstName("Celsinho");
+            celsinho.setLastName("Mendes");
+            celsinho.setPhoneNumber("123456789");
+            celsinho.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celsinho.setTypeOfUser("developer");
+            celsinho.setActive(true);
+            celsinho.setConfirmed(true);
+        }
+
+        UserEntity userEntity7 = userDao.findUserByUsername("Celsao");
+        if (userEntity7 == null) {
+            User celsoPo = new User();
+            celsoPo.setUsername("Celsao");
+            celsoPo.setPassword("123");
+            celsoPo.setEmail("celsao@po.com");
+            celsoPo.setFirstName("Celsão");
+            celsoPo.setLastName("Oliveira");
+            celsoPo.setPhoneNumber("123456789");
+            celsoPo.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celsoPo.setTypeOfUser("product_owner");
+            celsoPo.setActive(true);
+            celsoPo.setConfirmed(true);
+        }
+
+        UserEntity userEntity8 = userDao.findUserByUsername("Celsito");
+        if (userEntity8 == null) {
+            User celsoPo = new User();
+            celsoPo.setUsername("Celsito");
+            celsoPo.setPassword("123");
+            celsoPo.setEmail("celsito@agileup.com");
+            celsoPo.setFirstName("Celsito");
+            celsoPo.setLastName("Castro");
+            celsoPo.setPhoneNumber("123456789");
+            celsoPo.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celsoPo.setTypeOfUser("developer");
+            celsoPo.setActive(true);
+            celsoPo.setConfirmed(true);
+        }
+
+        UserEntity userEntity9 = userDao.findUserByUsername("Celsozito");
+        if (userEntity9 == null) {
+            User celsoPo = new User();
+            celsoPo.setUsername("Celsozito");
+            celsoPo.setPassword("123");
+            celsoPo.setEmail("celsozito@agileup.com");
+            celsoPo.setFirstName("Celsozito");
+            celsoPo.setLastName("Anastácio");
+            celsoPo.setPhoneNumber("123456789");
+            celsoPo.setImgURL("https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000");
+            celsoPo.setTypeOfUser("developer");
+            celsoPo.setActive(true);
+            celsoPo.setConfirmed(true);
+        }
+
     }
 
     public boolean recoverPassword (String email){

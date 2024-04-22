@@ -7,6 +7,7 @@ import aor.paj.dto.Category;
 import aor.paj.dto.Task;
 import aor.paj.dto.User;
 import aor.paj.entity.TaskEntity;
+import aor.paj.websocket.TasksWebsocket;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -30,6 +31,9 @@ public class TaskService {
 
     @Inject
     CategoryDao categoryDao;
+
+    @Inject
+    TasksWebsocket tasksWebsocket;
 
     //getter das tasks
 
@@ -61,6 +65,7 @@ public class TaskService {
 
         } else if (taskBean.addTask(token,task, categoryId)) {
             response = Response.status(200).entity("A new task is created").build();
+            tasksWebsocket.notifyTasksUpdated();
 
         } else {
             response = Response.status(400).entity("Failed to update task").build();
@@ -100,6 +105,7 @@ public class TaskService {
 
         } else if (taskBean.updateTask(token, taskId, task, categoryId)) {
             response = Response.status(200).entity("Task updated sucessfully").build();
+            tasksWebsocket.notifyTasksUpdated();
 
         } else
             response = Response.status(400).entity("Failed to update task").build();
@@ -124,6 +130,7 @@ public class TaskService {
 
         } else if (taskBean.updateTaskCategory(token, taskId, category)) {
             response = Response.status(200).entity("Task category changed successfully").build();
+            tasksWebsocket.notifyTasksUpdated();
 
         } else {
             response = Response.status(400).entity("Task category update failed").build();
@@ -148,6 +155,14 @@ public class TaskService {
 
         } else if (taskBean.updateTaskState(token, taskId, state)) {
             response = Response.status(200).entity("Task state updated successfully").build();
+
+            tasksWebsocket.notifyTasksUpdated();
+
+            // send to task websocket data so that other users can refresh the screen
+            // no servidor criar um websocket para as tasks
+            // nesta class e metodo ter acesso ao websocket para enviar a mensagem
+            // enviar a mensagem para o websocket
+            // no cliente fazer update a store que da trigger ao refresh do ecra
 
         } else
             response = Response.status(400).entity("Failed to update task state").build();
@@ -179,6 +194,7 @@ public class TaskService {
 
         } else if (taskBean.updateTaskActiveState(token, taskId)) {
             response = Response.status(200).entity("Task active state updated successfully").build();
+            tasksWebsocket.notifyTasksUpdated();
 
         } else
             response = Response.status(400).entity("Failed to update task active state").build();
@@ -252,6 +268,7 @@ public class TaskService {
 
         } else if (taskBean.deleteTasksByUsername(username))  {
             response = Response.status(200).entity("Tasks deleted successfully").build();
+            tasksWebsocket.notifyTasksUpdated();
 
         } else {
             response = Response.status(400).entity("Failed to execute order").build();
@@ -274,6 +291,7 @@ public class TaskService {
 
         } else if (taskBean.hardDeleteTask(token, id))  {
             response = Response.status(200).entity("Task permanently deleted").build();
+            tasksWebsocket.notifyTasksUpdated();
 
         } else {
             response = Response.status(400).entity("Failed to execute order").build();
