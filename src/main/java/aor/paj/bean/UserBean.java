@@ -672,6 +672,8 @@ public class UserBean implements Serializable {
             celso.setTypeOfUser("developer");
             celso.setActive(true);
             celso.setConfirmed(true);
+
+            register(celso);
         }
 
         UserEntity userEntity4 = userDao.findUserByUsername("Celso_sm");
@@ -687,6 +689,8 @@ public class UserBean implements Serializable {
             celsoSm.setTypeOfUser("scrum_master");
             celsoSm.setActive(true);
             celsoSm.setConfirmed(true);
+
+            register(celsoSm);
         }
 
         UserEntity userEntity5 = userDao.findUserByUsername("Celso_po");
@@ -702,6 +706,8 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("product_owner");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
+
+            register(celsoPo);
         }
 
         UserEntity userEntity6 = userDao.findUserByUsername("Celsinho");
@@ -717,6 +723,8 @@ public class UserBean implements Serializable {
             celsinho.setTypeOfUser("developer");
             celsinho.setActive(true);
             celsinho.setConfirmed(true);
+
+            register(celsinho);
         }
 
         UserEntity userEntity7 = userDao.findUserByUsername("Celsao");
@@ -732,6 +740,8 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("product_owner");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
+
+            register(celsoPo);
         }
 
         UserEntity userEntity8 = userDao.findUserByUsername("Celsito");
@@ -747,6 +757,10 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("developer");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
+
+            register(celsoPo);
+
+
         }
 
         UserEntity userEntity9 = userDao.findUserByUsername("Celsozito");
@@ -762,6 +776,8 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("developer");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
+
+            register(celsoPo);
         }
 
     }

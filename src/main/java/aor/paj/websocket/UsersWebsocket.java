@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Singleton
-@ServerEndpoint("/websocket/categories")
+@ServerEndpoint("/websocket/users")
 public class UsersWebsocket {
 
     private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());

@@ -6,6 +6,7 @@ import aor.paj.dto.*;
 
 import aor.paj.entity.UserEntity;
 import aor.paj.utils.EncryptHelper;
+import aor.paj.websocket.UsersWebsocket;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -28,6 +29,9 @@ public class UserService {
 
     @Inject
     EncryptHelper encryptHelper;
+
+    @Inject
+    UsersWebsocket usersWebsocket;
 
 
 
@@ -64,6 +68,7 @@ public class UserService {
 
         } else if (userBean.register(user)) {
             response = Response.status(Response.Status.CREATED).entity("User registered successfully").build(); //status code 201
+            usersWebsocket.notifyUsersUpdated();
 
         } else {
             response = Response.status(Response.Status.BAD_REQUEST).entity("Something went wrong").build(); //status code 400
@@ -107,6 +112,7 @@ public class UserService {
                         .build();
 
                 response = Response.status(Response.Status.OK).entity(jsonResponse).build();
+                usersWebsocket.notifyUsersUpdated();
 
             } else {
                 response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update user").build();
@@ -206,10 +212,12 @@ public class UserService {
     @Path("/restoreUser/{username}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response restoreUser(@HeaderParam("token") String token, @PathParam("username") String username) {
+
         User user = userBean.getUserByToken(token);
         if (user != null && (user.getTypeOfUser().equals("product_owner"))) {
             boolean restored = userBean.restoreUser(username);
             if (restored) {
+                usersWebsocket.notifyUsersUpdated();
                 return Response.status(Response.Status.OK).entity("User restored successfully").build();
             }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to restore user").build();
@@ -225,6 +233,7 @@ public class UserService {
         if (user != null && (user.getTypeOfUser().equals("product_owner"))) {
             boolean deleted = userBean.removeUser(username);
             if (deleted) {
+                usersWebsocket.notifyUsersUpdated();
                 return Response.status(Response.Status.OK).entity("User deleted successfully").build();
             }
 
@@ -241,6 +250,7 @@ public class UserService {
         if (user != null && (user.getTypeOfUser().equals("product_owner"))) {
             boolean deleted = userBean.deletePermanentlyUser(username);
             if (deleted) {
+                usersWebsocket.notifyUsersUpdated();
                 return Response.status(Response.Status.OK).entity("User deleted successfully").build();
             }
 
@@ -325,6 +335,7 @@ public class UserService {
 
             boolean updatedUSer = userBean.updateUser(token, user);
             if (updatedUSer) {
+                usersWebsocket.notifyUsersUpdated();
                 return Response.status(Response.Status.OK).entity(user).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update user").build();
@@ -411,6 +422,7 @@ public class UserService {
 
             boolean updatedUSer = userBean.updateUserByPO(token, username, beModified);
             if (updatedUSer) {
+                usersWebsocket.notifyUsersUpdated();
                 return Response.status(200).entity(beModified).build();
             } else {
                 return Response.status(406).entity("Failed to update user").build();
@@ -461,6 +473,7 @@ public class UserService {
 
             } else if (userBean.registerByPO(token,user)) {
                 response = Response.status(Response.Status.CREATED).entity("User registered successfully").build();
+                usersWebsocket.notifyUsersUpdated();
 
             } else {
                 response = Response.status(Response.Status.BAD_REQUEST).entity("Something went wrong").build();
@@ -494,6 +507,7 @@ public class UserService {
             response = Response.status(403).entity("Invalid role").build();
 
         } else if (userBean.updateUserRole(username, newRoleConverted)) {
+            usersWebsocket.notifyUsersUpdated();
             response = Response.status(200).entity("User role updated").build();
 
         } else {
