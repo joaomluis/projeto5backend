@@ -491,7 +491,7 @@ public class TaskBean {
                         .add("numberOfDoneTasks", getNumberOfDoneTasks(token, username))
                         .build();
             }
-            
+
         } catch (NullPointerException e) {
             System.out.println("Caught a NullPointerException: " + e.getMessage());
         }

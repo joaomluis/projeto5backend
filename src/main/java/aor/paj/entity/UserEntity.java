@@ -15,6 +15,11 @@ import java.util.Set;
 @NamedQuery(name = "User.findAllUsers", query = "SELECT u FROM UserEntity u " )
 @NamedQuery(name="User.findUserByName", query = "SELECT u FROM UserEntity u WHERE u.firstName=:name OR u.lastName = :name")
 @NamedQuery(name="User.findUserByConfirmationToken", query = "SELECT u FROM UserEntity u WHERE u.confirmationToken = :confirmationToken")
+
+@NamedQuery(name="User.countUsers", query = "SELECT COUNT(u) FROM UserEntity u")
+@NamedQuery(name="User.countConfirmedUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isConfirmed = true")
+@NamedQuery(name="User.countUnconfirmedUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isConfirmed = false")
+
 public class UserEntity implements Serializable{
 
 	private static final long serialVersionUID = 1L;
