@@ -390,5 +390,23 @@ public class TaskService {
         return response;
     }
 
+    @GET
+    @Path("statistics")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStatistics(@HeaderParam("token") String token, @HeaderParam("username") String username) {
+        Response response;
+
+        if (userBean.getUserByToken(token) == null) {
+            response = Response.status(403).entity("Invalid token").build();
+
+        } else {
+            JsonObject statistics = taskBean.getTaskDataAsJson(token, username);
+            response = Response.status(200).entity(statistics).build();
+        }
+
+        return response;
+    }
+
+
 }
 

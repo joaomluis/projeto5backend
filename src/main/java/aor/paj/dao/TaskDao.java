@@ -106,4 +106,36 @@ public class TaskDao extends AbstractDao<TaskEntity> {
 			return null;
 		}
 	}
+
+	public int countTasksByUser(UserEntity userEntity) {
+		try {
+			return ((Number) em.createNamedQuery("Task.countTasksByUser").setParameter("owner", userEntity).getSingleResult()).intValue();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public int countToDoTasksByUser(UserEntity userEntity) {
+		try {
+			return ((Number) em.createNamedQuery("Task.countToDoTasksByUser").setParameter("owner", userEntity).getSingleResult()).intValue();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public int countDoingTasksByUser(UserEntity userEntity) {
+		try {
+			return ((Number) em.createNamedQuery("Task.countDoingTasksByUser").setParameter("owner", userEntity).getSingleResult()).intValue();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public int countDoneTasksByUser(UserEntity userEntity) {
+		try {
+			return ((Number) em.createNamedQuery("Task.countDoneTasksByUser").setParameter("owner", userEntity).getSingleResult()).intValue();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
 }

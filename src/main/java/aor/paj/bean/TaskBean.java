@@ -14,6 +14,8 @@ import aor.paj.entity.UserEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 @Singleton
 public class TaskBean {
@@ -473,6 +475,85 @@ public class TaskBean {
                 }
             }
         return tasksByUsername;
+    }
+
+    public JsonObject getTaskDataAsJson(String token, String username) {
+        JsonObject taskCounts = null;
+
+        try {
+            UserEntity userEntity = userDao.findUserByToken(token);
+
+            if (userEntity != null) {
+                taskCounts = Json.createObjectBuilder()
+                        .add("numberOfTasks", getNumberOfTasks(token, username))
+                        .add("numberOfToDoTasks", getNumberOfToDoTasks(token, username))
+                        .add("numberOfDoingTasks", getNumberOfDoingTasks(token, username))
+                        .add("numberOfDoneTasks", getNumberOfDoneTasks(token, username))
+                        .build();
+            }
+            
+        } catch (NullPointerException e) {
+            System.out.println("Caught a NullPointerException: " + e.getMessage());
+        }
+
+        return taskCounts;
+    }
+
+    private int getNumberOfTasks(String token, String username) {
+        int numberOfTasks = 0;
+
+
+        UserEntity userEntity = userDao.findUserByToken(token);
+        UserEntity userToFindStats = userDao.findUserByUsername(username);
+
+        if (userEntity != null && userToFindStats != null) {
+            numberOfTasks = taskDao.countTasksByUser(userToFindStats);
+        }
+
+        return numberOfTasks;
+
+    }
+
+    private int getNumberOfToDoTasks(String token, String username) {
+        int numberOfToDoTasks = 0;
+
+        UserEntity userEntity = userDao.findUserByToken(token);
+        UserEntity userToFindStats = userDao.findUserByUsername(username);
+
+        if (userEntity != null && userToFindStats != null) {
+            numberOfToDoTasks = taskDao.countToDoTasksByUser(userToFindStats);
+        }
+
+        return numberOfToDoTasks;
+
+    }
+
+    private int getNumberOfDoingTasks(String token, String username) {
+        int numberOfToDoTasks = 0;
+
+        UserEntity userEntity = userDao.findUserByToken(token);
+        UserEntity userToFindStats = userDao.findUserByUsername(username);
+
+        if (userEntity != null && userToFindStats != null) {
+            numberOfToDoTasks = taskDao.countDoingTasksByUser(userToFindStats);
+        }
+
+        return numberOfToDoTasks;
+
+    }
+
+    private int getNumberOfDoneTasks(String token, String username) {
+        int numberOfToDoTasks = 0;
+
+        UserEntity userEntity = userDao.findUserByToken(token);
+        UserEntity userToFindStats = userDao.findUserByUsername(username);
+
+        if (userEntity != null && userToFindStats != null) {
+            numberOfToDoTasks = taskDao.countDoneTasksByUser(userToFindStats);
+        }
+
+        return numberOfToDoTasks;
+
     }
 
 }
