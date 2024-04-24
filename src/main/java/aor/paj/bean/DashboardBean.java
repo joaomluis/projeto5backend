@@ -6,6 +6,7 @@ import aor.paj.dao.UserDao;
 import aor.paj.dto.CategoryUsageDto;
 import aor.paj.dto.UserRegistrationDto;
 import aor.paj.entity.CategoryEntity;
+import aor.paj.entity.TaskEntity;
 import aor.paj.entity.UserEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
@@ -14,7 +15,9 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -104,6 +107,7 @@ public DashboardBean(){
                         .add("doingTasksQuantity", countTasksByState("doing"))
                         .add("doneTasksQuantity", countTasksByState("done"))
                         .add("totalTasks", countTasks())
+                        .add("avgCompletionTime", getAverageCompletionTime())
                         .add("avgTaskPerUser", getAvgTaskPerUser())
                         .add("categoryUsage", categoryUsageArray)
                         .build();
@@ -124,6 +128,15 @@ public DashboardBean(){
         return taskDao.countTasks();
     }
 
+    public double getAverageCompletionTime() {
+        List<TaskEntity> tasks = taskDao.findAllCompletedTasks();
+        return tasks.stream()
+                .filter(task -> task.getConclusionDate() != null)
+                .mapToLong(task -> ChronoUnit.DAYS.between(task.getInitialDate(), task.getConclusionDate()))
+                .average()
+                .orElse(0);
+    }
+
     private List<CategoryUsageDto> findCategoriesOrderedByUsage(){
         List<Object[]> results = taskDao.findCategoriesOrderedByUsage();
         List<CategoryUsageDto> categoryUsageList = new ArrayList<>();
@@ -139,7 +152,7 @@ public DashboardBean(){
         List<Object[]> results = userDao.countUsersByRegistrationDate();
         List<UserRegistrationDto> userRegistrationList = new ArrayList<>();
         for (Object[] result : results) {
-            LocalDateTime registrationDate = (LocalDateTime) result[0];
+            LocalDate registrationDate = (LocalDate) result[0];
             int count = ((Long) result[1]).intValue();
             userRegistrationList.add(new UserRegistrationDto(registrationDate, count));
         }

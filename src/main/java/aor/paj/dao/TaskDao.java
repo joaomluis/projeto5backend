@@ -145,6 +145,14 @@ public class TaskDao extends AbstractDao<TaskEntity> {
 		return results.stream().mapToLong(result -> (Long) result[1]).average().orElse(0);
 	}
 
+ 	public List<TaskEntity> findAllCompletedTasks() {
+		try {
+			return em.createNamedQuery("Task.findAllCompletedTasks").getResultList();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public List<Object[]> findCategoriesOrderedByUsage() {
 		return em.createNamedQuery("Task.findCategoriesOrderedByUsage").getResultList();
 	}

@@ -23,6 +23,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -374,7 +375,7 @@ public class UserBean implements Serializable {
 
         if (u==null){
             user.setPassword(encryptHelper.encryptPassword(user.getPassword()));
-            user.setRegistrationDate(LocalDateTime.now());
+            user.setRegistrationDate(LocalDate.now());
             userDao.persist(convertUserDtotoUserEntity(user));
             return true;
         }else
@@ -395,7 +396,7 @@ public class UserBean implements Serializable {
                 user.setConfirmationTokenDate(LocalDateTime.now().plusDays(1));
 
                 user.setPassword(encryptHelper.encryptPassword(user.getPassword()));
-                user.setRegistrationDate(LocalDateTime.now());
+                user.setRegistrationDate(LocalDate.now());
                 userDao.persist(convertUserDtotoUserEntity(user));
 
                 sendVerificationEmail(user.getEmail(),
@@ -640,7 +641,7 @@ public class UserBean implements Serializable {
             admin.setImgURL("https://t4.ftcdn.net/jpg/04/75/00/99/240_F_475009987_zwsk4c77x3cTpcI3W1C1LU4pOSyPKaqi.jpg");
             admin.setTypeOfUser("product_owner");
             admin.setConfirmed(true);
-            admin.setRegistrationDate(LocalDateTime.now());
+            admin.setRegistrationDate(LocalDate.now());
 
 
             register(admin);
@@ -659,7 +660,7 @@ public class UserBean implements Serializable {
             deletedUser.setTypeOfUser("developer");
             deletedUser.setActive(false);
             deletedUser.setConfirmed(true);
-            deletedUser.setRegistrationDate(LocalDateTime.now());
+            deletedUser.setRegistrationDate(LocalDate.now());
 
             register(deletedUser);
         }
@@ -677,7 +678,7 @@ public class UserBean implements Serializable {
             celso.setTypeOfUser("developer");
             celso.setActive(true);
             celso.setConfirmed(true);
-            celso.setRegistrationDate(LocalDateTime.now());
+            celso.setRegistrationDate(LocalDate.now());
 
             register(celso);
         }
@@ -695,7 +696,7 @@ public class UserBean implements Serializable {
             celsoSm.setTypeOfUser("scrum_master");
             celsoSm.setActive(true);
             celsoSm.setConfirmed(true);
-            celsoSm.setRegistrationDate(LocalDateTime.now());
+            celsoSm.setRegistrationDate(LocalDate.now());
 
 
             register(celsoSm);
@@ -714,7 +715,7 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("product_owner");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
-            celsoPo.setRegistrationDate(LocalDateTime.now());
+            celsoPo.setRegistrationDate(LocalDate.now());
 
             register(celsoPo);
         }
@@ -732,7 +733,7 @@ public class UserBean implements Serializable {
             celsinho.setTypeOfUser("developer");
             celsinho.setActive(true);
             celsinho.setConfirmed(true);
-            celsinho.setRegistrationDate(LocalDateTime.now());
+            celsinho.setRegistrationDate(LocalDate.now());
 
             register(celsinho);
         }
@@ -750,7 +751,7 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("product_owner");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
-            celsoPo.setRegistrationDate(LocalDateTime.now());
+            celsoPo.setRegistrationDate(LocalDate.now());
 
             register(celsoPo);
         }
@@ -768,7 +769,7 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("developer");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
-            celsoPo.setRegistrationDate(LocalDateTime.now());
+            celsoPo.setRegistrationDate(LocalDate.now());
 
             register(celsoPo);
 
@@ -788,7 +789,7 @@ public class UserBean implements Serializable {
             celsoPo.setTypeOfUser("developer");
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
-            celsoPo.setRegistrationDate(LocalDateTime.now());
+            celsoPo.setRegistrationDate(LocalDate.now());
 
             register(celsoPo);
         }

@@ -74,7 +74,7 @@ public class UserEntity implements Serializable{
 	private LocalDateTime confirmationTokenDate;
 
 	@Column (name="registrationDate", nullable=false, unique = false, updatable = true)
-	private LocalDateTime registrationDate;
+	private LocalDate registrationDate;
 
 
 	@OneToMany(mappedBy = "owner")
@@ -197,11 +197,11 @@ public class UserEntity implements Serializable{
 		this.confirmationTokenDate = confirmationTokenDate;
 	}
 
-	public LocalDateTime getRegistrationDate() {
+	public LocalDate getRegistrationDate() {
 		return registrationDate;
 	}
 
-	public void setRegistrationDate(LocalDateTime registrationDate) {
+	public void setRegistrationDate(LocalDate registrationDate) {
 		this.registrationDate = registrationDate;
 	}
 }

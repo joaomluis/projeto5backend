@@ -1,14 +1,16 @@
 package aor.paj.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
 public class UserRegistrationDto implements Serializable {
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
     private int userCount;
 
 
-    public UserRegistrationDto(LocalDateTime registrationDate, int userCount) {
+    public UserRegistrationDto(LocalDate registrationDate, int userCount) {
         this.registrationDate = registrationDate;
         this.userCount = userCount;
     }
@@ -16,11 +18,11 @@ public class UserRegistrationDto implements Serializable {
     public UserRegistrationDto() {
     }
 
-    public LocalDateTime getRegistrationDate() {
+    public LocalDate getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDateTime registrationDate) {
+    public void setRegistrationDate(LocalDate registrationDate) {
         this.registrationDate = registrationDate;
     }
 
