@@ -35,6 +35,8 @@ import java.time.LocalDate;
 @NamedQuery(name = "Task.findCategoriesOrderedByUsage",
 		query = "SELECT t.category, COUNT(t) FROM TaskEntity t GROUP BY t.category ORDER BY COUNT(t) DESC")
 @NamedQuery(name= "Task.findAllCompletedTasks", query = "SELECT t FROM TaskEntity t WHERE t.state = 'done' AND t.isActive = true")
+@NamedQuery(name = "Task.countTasksByCompletionDate",
+		query = "SELECT t.conclusionDate, COUNT(t) FROM TaskEntity t WHERE t.conclusionDate IS NOT NULL GROUP BY t.conclusionDate")
 
 public class TaskEntity implements Serializable{
 

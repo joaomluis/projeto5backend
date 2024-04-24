@@ -4,6 +4,7 @@ import aor.paj.dao.CategoryDao;
 import aor.paj.dao.TaskDao;
 import aor.paj.dao.UserDao;
 import aor.paj.dto.CategoryUsageDto;
+import aor.paj.dto.TasksDateCompletionDto;
 import aor.paj.dto.UserRegistrationDto;
 import aor.paj.entity.CategoryEntity;
 import aor.paj.entity.TaskEntity;
@@ -91,16 +92,10 @@ public DashboardBean(){
             UserEntity userEntity = userDao.findUserByToken(token);
 
             if (userEntity != null) {
-                List<CategoryUsageDto> categoryUsageList = findCategoriesOrderedByUsage();
-                JsonArrayBuilder categoryUsageArrayBuilder = Json.createArrayBuilder();
 
-                for (CategoryUsageDto categoryUsage : categoryUsageList) {
-                    categoryUsageArrayBuilder.add(Json.createObjectBuilder()
-                            .add("title", categoryUsage.getCategoryName())
-                            .add("count", categoryUsage.getTaskCount()));
-                }
+                JsonArray categoryUsageArray = categoryUsageToJsonArray(findCategoriesOrderedByUsage());
+                JsonArray tasksDateCompletionArray = tasksDateCompletionToJsonArray(countTasksByCompletionDate());
 
-                JsonArray categoryUsageArray = categoryUsageArrayBuilder.build();
 
                 taskCounts = Json.createObjectBuilder()
                         .add("toDoTasksQuantity", countTasksByState("toDo"))
@@ -110,6 +105,7 @@ public DashboardBean(){
                         .add("avgCompletionTime", getAverageCompletionTime())
                         .add("avgTaskPerUser", getAvgTaskPerUser())
                         .add("categoryUsage", categoryUsageArray)
+                        .add("tasksDateCompletion", tasksDateCompletionArray)
                         .build();
             }
 
@@ -146,6 +142,37 @@ public DashboardBean(){
             categoryUsageList.add(new CategoryUsageDto(category.getTitle(), count));
         }
         return categoryUsageList;
+    }
+
+    private JsonArray categoryUsageToJsonArray(List<CategoryUsageDto> categoryUsageList) {
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        for (CategoryUsageDto categoryUsage : categoryUsageList) {
+            jsonArrayBuilder.add(Json.createObjectBuilder()
+                    .add("title", categoryUsage.getCategoryName())
+                    .add("count", categoryUsage.getTaskCount()));
+        }
+        return jsonArrayBuilder.build();
+    }
+
+    private List<TasksDateCompletionDto> countTasksByCompletionDate() {
+        List<Object[]> results = taskDao.countTasksByCompletionDate();
+        List<TasksDateCompletionDto> tasksDateCompletionList = new ArrayList<>();
+        for (Object[] result : results) {
+            LocalDate completionDate = (LocalDate) result[0];
+            int count = ((Long) result[1]).intValue();
+            tasksDateCompletionList.add(new TasksDateCompletionDto(completionDate, count));
+        }
+        return tasksDateCompletionList;
+    }
+
+    private JsonArray tasksDateCompletionToJsonArray(List<TasksDateCompletionDto> tasksDateCompletionList) {
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        for (TasksDateCompletionDto tasksDateCompletion : tasksDateCompletionList) {
+            jsonArrayBuilder.add(Json.createObjectBuilder()
+                    .add("completionDate", tasksDateCompletion.getCompletionDate().toString())
+                    .add("count", tasksDateCompletion.getCount()));
+        }
+        return jsonArrayBuilder.build();
     }
 
     private List<UserRegistrationDto> countUsersByRegistrationDate() {

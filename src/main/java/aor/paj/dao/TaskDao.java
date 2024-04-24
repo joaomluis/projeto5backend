@@ -153,6 +153,14 @@ public class TaskDao extends AbstractDao<TaskEntity> {
 		}
 	}
 
+	public List<Object[]> countTasksByCompletionDate() {
+		try {
+			return em.createNamedQuery("Task.countTasksByCompletionDate").getResultList();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public List<Object[]> findCategoriesOrderedByUsage() {
 		return em.createNamedQuery("Task.findCategoriesOrderedByUsage").getResultList();
 	}
