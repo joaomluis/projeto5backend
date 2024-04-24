@@ -34,6 +34,8 @@ public class User{
     private String confirmationToken;
     @XmlElement
     private LocalDateTime confirmationTokenDate;
+    @XmlElement
+    private LocalDateTime registrationDate;
 
 
 
@@ -156,6 +158,14 @@ public class User{
 
     public void setConfirmationTokenDate(LocalDateTime confirmationTokenDate) {
         this.confirmationTokenDate = confirmationTokenDate;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -68,6 +69,8 @@ public class UserEntity implements Serializable{
 	@Column (name="confirmationTokenDate", nullable=true, unique = false, updatable = true)
 	private LocalDateTime confirmationTokenDate;
 
+	@Column (name="registrationDate", nullable=false, unique = false, updatable = true)
+	private LocalDateTime registrationDate;
 
 
 	@OneToMany(mappedBy = "owner")
@@ -190,5 +193,11 @@ public class UserEntity implements Serializable{
 		this.confirmationTokenDate = confirmationTokenDate;
 	}
 
+	public LocalDateTime getRegistrationDate() {
+		return registrationDate;
+	}
 
+	public void setRegistrationDate(LocalDateTime registrationDate) {
+		this.registrationDate = registrationDate;
+	}
 }
