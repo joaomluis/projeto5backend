@@ -123,6 +123,14 @@ public class UserDao extends AbstractDao<UserEntity> {
 			return 0;
 		}
 	}
+
+	public List<Object> countUsersByRegistrationDate() {
+		try {
+			return em.createNamedQuery("User.countUsersByRegistrationDate").getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 }
 
 

@@ -23,6 +23,10 @@ import java.util.Set;
 @NamedQuery(name="User.countUnconfirmedUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isConfirmed = false")
 @NamedQuery(name="User.countActiveUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isActive = true")
 @NamedQuery(name="User.countInactiveUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isActive = false")
+@NamedQuery(name = "User.countUsersByRegistrationDate",
+		query = "SELECT u.registrationDate, COUNT(u) FROM UserEntity u GROUP BY u.registrationDate ORDER BY u.registrationDate ASC")
+
+
 
 public class UserEntity implements Serializable{
 

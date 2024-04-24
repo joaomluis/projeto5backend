@@ -9,6 +9,8 @@ import aor.paj.entity.UserEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 
 import java.util.ArrayList;
@@ -71,12 +73,24 @@ public DashboardBean(){
             UserEntity userEntity = userDao.findUserByToken(token);
 
             if (userEntity != null) {
+                List<CategoryUsageDto> categoryUsageList = findCategoriesOrderedByUsage();
+                JsonArrayBuilder categoryUsageArrayBuilder = Json.createArrayBuilder();
+
+                for (CategoryUsageDto categoryUsage : categoryUsageList) {
+                    categoryUsageArrayBuilder.add(Json.createObjectBuilder()
+                            .add("title", categoryUsage.getCategoryName())
+                            .add("count", categoryUsage.getTaskCount()));
+                }
+
+                JsonArray categoryUsageArray = categoryUsageArrayBuilder.build();
+
                 taskCounts = Json.createObjectBuilder()
                         .add("toDoTasksQuantity", countTasksByState("toDo"))
                         .add("doingTasksQuantity", countTasksByState("doing"))
                         .add("doneTasksQuantity", countTasksByState("done"))
                         .add("totalTasks", countTasks())
                         .add("avgTaskPerUser", getAvgTaskPerUser())
+                        .add("categoryUsage", categoryUsageArray)
                         .build();
             }
 
@@ -104,6 +118,10 @@ public DashboardBean(){
             categoryUsageList.add(new CategoryUsageDto(category.getTitle(), count));
         }
         return categoryUsageList;
+    }
+
+    private List<Object> countUsersByRegistrationDate() {
+        return userDao.countUsersByRegistrationDate();
     }
 
     private double getAvgTaskPerUser() {
