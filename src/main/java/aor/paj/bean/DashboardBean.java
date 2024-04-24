@@ -4,6 +4,7 @@ import aor.paj.dao.CategoryDao;
 import aor.paj.dao.TaskDao;
 import aor.paj.dao.UserDao;
 import aor.paj.dto.CategoryUsageDto;
+import aor.paj.dto.UserRegistrationDto;
 import aor.paj.entity.CategoryEntity;
 import aor.paj.entity.UserEntity;
 import jakarta.ejb.EJB;
@@ -13,6 +14,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,10 +42,23 @@ public DashboardBean(){
             UserEntity userEntity = userDao.findUserByToken(token);
 
             if (userEntity != null) {
+                List<UserRegistrationDto> userRegistrationList = countUsersByRegistrationDate();
+                JsonArrayBuilder userRegistrationArrayBuilder = Json.createArrayBuilder();
+
+                for (UserRegistrationDto userRegistration : userRegistrationList) {
+                    userRegistrationArrayBuilder.add(Json.createObjectBuilder()
+                            .add("registrationDate", userRegistration.getRegistrationDate().toString())
+                            .add("count", userRegistration.getUserCount()));
+                }
+
+                JsonArray userRegistrationArray = userRegistrationArrayBuilder.build();
+
+
                 taskCounts = Json.createObjectBuilder()
                         .add("totalUsers", countUsers())
                         .add("activeUsers", countActiveUsers())
                         .add("inactiveUsers", countInactiveUsers())
+                        .add("userRegistration", userRegistrationArray)
                         .build();
             }
 
@@ -120,8 +135,15 @@ public DashboardBean(){
         return categoryUsageList;
     }
 
-    private List<Object> countUsersByRegistrationDate() {
-        return userDao.countUsersByRegistrationDate();
+    private List<UserRegistrationDto> countUsersByRegistrationDate() {
+        List<Object[]> results = userDao.countUsersByRegistrationDate();
+        List<UserRegistrationDto> userRegistrationList = new ArrayList<>();
+        for (Object[] result : results) {
+            LocalDateTime registrationDate = (LocalDateTime) result[0];
+            int count = ((Long) result[1]).intValue();
+            userRegistrationList.add(new UserRegistrationDto(registrationDate, count));
+        }
+        return userRegistrationList;
     }
 
     private double getAvgTaskPerUser() {
