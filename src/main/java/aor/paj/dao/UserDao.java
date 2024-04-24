@@ -99,6 +99,30 @@ public class UserDao extends AbstractDao<UserEntity> {
 			return false;
 		}
 	}
+
+	public int countUsers() {
+		try {
+			return ((Number) em.createNamedQuery("User.countUsers").getSingleResult()).intValue();
+		} catch (NoResultException e) {
+			return 0;
+		}
+	}
+
+	public int countActiveUsers() {
+		try {
+			return ((Number) em.createNamedQuery("User.countActiveUsers").getSingleResult()).intValue();
+		} catch (NoResultException e) {
+			return 0;
+		}
+	}
+
+	public int countInactiveUsers() {
+		try {
+			return ((Number) em.createNamedQuery("User.countInactiveUsers").getSingleResult()).intValue();
+		} catch (NoResultException e) {
+			return 0;
+		}
+	}
 }
 
 

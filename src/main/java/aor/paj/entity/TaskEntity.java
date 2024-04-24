@@ -23,10 +23,17 @@ import java.time.LocalDate;
 @NamedQuery(name="Task.findTaskByUserNameFilter", query="SELECT a FROM TaskEntity a WHERE a.owner.username = :username AND a.isActive = true ORDER BY a.priority DESC, a.endDate ASC")
 @NamedQuery(name = "Task.findTasksByCategoryFilter", query = "SELECT t FROM TaskEntity t WHERE t.category.idCategory = :category AND t.isActive = true ORDER BY t.priority DESC, t.endDate ASC")
 
+//para user page
 @NamedQuery(name = "Task.countTasksByUser", query = "SELECT COUNT(a) FROM TaskEntity a WHERE a.owner = :owner AND a.isActive = true")
 @NamedQuery(name = "Task.countToDoTasksByUser", query = "SELECT COUNT(a) FROM TaskEntity a WHERE a.owner = :owner AND a.isActive = true AND a.state = 'toDo'")
 @NamedQuery(name = "Task.countDoingTasksByUser", query = "SELECT COUNT(a) FROM TaskEntity a WHERE a.owner = :owner AND a.isActive = true AND a.state = 'doing'")
 @NamedQuery(name = "Task.countDoneTasksByUser", query = "SELECT COUNT(a) FROM TaskEntity a WHERE a.owner = :owner AND a.isActive = true AND a.state = 'done'")
+
+//para dashboard
+@NamedQuery(name ="Task.countTaskByState", query = "SELECT COUNT(a) FROM TaskEntity a WHERE a.state = :state AND a.isActive = true")
+@NamedQuery(name = "Task.countTasks", query = "SELECT COUNT(a) FROM TaskEntity a")
+@NamedQuery(name = "Task.findCategoriesOrderedByUsage",
+		query = "SELECT t.category, COUNT(t) FROM TaskEntity t GROUP BY t.category ORDER BY COUNT(t) DESC")
 
 public class TaskEntity implements Serializable{
 
@@ -47,6 +54,9 @@ public class TaskEntity implements Serializable{
 
 	@Column(name="endDate", nullable = false, unique = false, updatable = true)
 	private LocalDate endDate;
+
+	@Column(name="conclusionDate", nullable = true, unique = false, updatable = true)
+	private LocalDate conclusionDate;
 
 	@Column(name="priority", nullable = false, unique = false, updatable = true)
 	private int priority;
@@ -155,6 +165,14 @@ public class TaskEntity implements Serializable{
 
 	public void setCategory(CategoryEntity category) {
 		this.category = category;
+	}
+
+	public LocalDate getConclusionDate() {
+		return conclusionDate;
+	}
+
+	public void setConclusionDate(LocalDate conclusionDate) {
+		this.conclusionDate = conclusionDate;
 	}
 }
 	

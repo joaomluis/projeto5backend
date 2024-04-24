@@ -8,6 +8,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.NoResultException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Stateless
 public class TaskDao extends AbstractDao<TaskEntity> {
@@ -134,6 +135,31 @@ public class TaskDao extends AbstractDao<TaskEntity> {
 	public int countDoneTasksByUser(UserEntity userEntity) {
 		try {
 			return ((Number) em.createNamedQuery("Task.countDoneTasksByUser").setParameter("owner", userEntity).getSingleResult()).intValue();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public double getAvgTaskPerUser() {
+		List<Object[]> results = em.createQuery("SELECT t.owner.username, COUNT(t) FROM TaskEntity t WHERE t.isActive = TRUE GROUP BY t.owner.username").getResultList();
+		return results.stream().mapToLong(result -> (Long) result[1]).average().orElse(0);
+	}
+
+	public List<Object[]> findCategoriesOrderedByUsage() {
+		return em.createNamedQuery("Task.findCategoriesOrderedByUsage").getResultList();
+	}
+
+	public int countTasksByState(String state) {
+		try {
+			return ((Number) em.createNamedQuery("Task.countTaskByState").setParameter("state", state).getSingleResult()).intValue();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public int countTasks() {
+		try {
+			return ((Number) em.createNamedQuery("Task.countTasks").getSingleResult()).intValue();
 		} catch (Exception e) {
 			return 0;
 		}

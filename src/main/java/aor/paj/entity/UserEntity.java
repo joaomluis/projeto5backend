@@ -3,7 +3,7 @@ package aor.paj.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -16,9 +16,12 @@ import java.util.Set;
 @NamedQuery(name="User.findUserByName", query = "SELECT u FROM UserEntity u WHERE u.firstName=:name OR u.lastName = :name")
 @NamedQuery(name="User.findUserByConfirmationToken", query = "SELECT u FROM UserEntity u WHERE u.confirmationToken = :confirmationToken")
 
+//para dashboard
 @NamedQuery(name="User.countUsers", query = "SELECT COUNT(u) FROM UserEntity u")
 @NamedQuery(name="User.countConfirmedUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isConfirmed = true")
 @NamedQuery(name="User.countUnconfirmedUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isConfirmed = false")
+@NamedQuery(name="User.countActiveUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isActive = true")
+@NamedQuery(name="User.countInactiveUsers", query = "SELECT COUNT(u) FROM UserEntity u WHERE u.isActive = false")
 
 public class UserEntity implements Serializable{
 
@@ -102,10 +105,7 @@ public class UserEntity implements Serializable{
 		return password;
 	}
 
-	/**
-	 * This method stores the password hashed
-	 * @param password recieved as hashed
-	 */
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -189,4 +189,6 @@ public class UserEntity implements Serializable{
 	public void setConfirmationTokenDate(LocalDateTime confirmationTokenDate) {
 		this.confirmationTokenDate = confirmationTokenDate;
 	}
+
+
 }

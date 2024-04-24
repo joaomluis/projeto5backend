@@ -1,5 +1,6 @@
 package aor.paj.bean;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import aor.paj.dao.CategoryDao;
@@ -124,6 +125,9 @@ public class TaskBean {
         if (confirmUser != null) {
             if (taskToUpdate != null) {
                 taskToUpdate.setState(newState);
+                if (newState.equals("done")) {
+                    taskToUpdate.setConclusionDate(LocalDate.now());
+                }
                 taskDao.merge(taskToUpdate);
                 status = true;
             } else {
