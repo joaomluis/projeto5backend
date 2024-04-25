@@ -7,6 +7,7 @@ import aor.paj.dto.Category;
 import aor.paj.dto.Task;
 import aor.paj.dto.User;
 import aor.paj.entity.TaskEntity;
+import aor.paj.websocket.DashboardWebsocket;
 import aor.paj.websocket.TasksWebsocket;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -34,6 +35,9 @@ public class TaskService {
 
     @Inject
     TasksWebsocket tasksWebsocket;
+
+    @Inject
+    DashboardWebsocket dashboardWebsocket;
 
     //getter das tasks
 
@@ -66,6 +70,7 @@ public class TaskService {
         } else if (taskBean.addTask(token,task, categoryId)) {
             response = Response.status(200).entity("A new task is created").build();
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
         } else {
             response = Response.status(400).entity("Failed to update task").build();
@@ -106,6 +111,7 @@ public class TaskService {
         } else if (taskBean.updateTask(token, taskId, task, categoryId)) {
             response = Response.status(200).entity("Task updated sucessfully").build();
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
         } else
             response = Response.status(400).entity("Failed to update task").build();
@@ -131,6 +137,7 @@ public class TaskService {
         } else if (taskBean.updateTaskCategory(token, taskId, category)) {
             response = Response.status(200).entity("Task category changed successfully").build();
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
         } else {
             response = Response.status(400).entity("Task category update failed").build();
@@ -157,6 +164,7 @@ public class TaskService {
             response = Response.status(200).entity("Task state updated successfully").build();
 
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
             // send to task websocket data so that other users can refresh the screen
             // no servidor criar um websocket para as tasks
@@ -195,6 +203,7 @@ public class TaskService {
         } else if (taskBean.updateTaskActiveState(token, taskId)) {
             response = Response.status(200).entity("Task active state updated successfully").build();
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
         } else
             response = Response.status(400).entity("Failed to update task active state").build();
@@ -269,6 +278,7 @@ public class TaskService {
         } else if (taskBean.deleteTasksByUsername(username))  {
             response = Response.status(200).entity("Tasks deleted successfully").build();
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
         } else {
             response = Response.status(400).entity("Failed to execute order").build();
@@ -292,6 +302,7 @@ public class TaskService {
         } else if (taskBean.hardDeleteTask(token, id))  {
             response = Response.status(200).entity("Task permanently deleted").build();
             tasksWebsocket.notifyTasksUpdated();
+            dashboardWebsocket.notifyTaskUpdatesForDashboard();
 
         } else {
             response = Response.status(400).entity("Failed to execute order").build();

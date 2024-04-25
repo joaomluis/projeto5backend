@@ -6,6 +6,7 @@ import aor.paj.dto.*;
 
 import aor.paj.entity.UserEntity;
 import aor.paj.utils.EncryptHelper;
+import aor.paj.websocket.DashboardWebsocket;
 import aor.paj.websocket.UsersWebsocket;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -32,6 +33,9 @@ public class UserService {
 
     @Inject
     UsersWebsocket usersWebsocket;
+
+    @Inject
+    DashboardWebsocket dashboardWebsocket;
 
 
 
@@ -69,6 +73,7 @@ public class UserService {
         } else if (userBean.register(user)) {
             response = Response.status(Response.Status.CREATED).entity("User registered successfully").build(); //status code 201
             usersWebsocket.notifyUsersUpdated();
+            dashboardWebsocket.notifyUserUpdatesForDashboard();
 
         } else {
             response = Response.status(Response.Status.BAD_REQUEST).entity("Something went wrong").build(); //status code 400
@@ -113,6 +118,7 @@ public class UserService {
 
                 response = Response.status(Response.Status.OK).entity(jsonResponse).build();
                 usersWebsocket.notifyUsersUpdated();
+                dashboardWebsocket.notifyUserUpdatesForDashboard();
 
             } else {
                 response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update user").build();
@@ -218,6 +224,7 @@ public class UserService {
             boolean restored = userBean.restoreUser(username);
             if (restored) {
                 usersWebsocket.notifyUsersUpdated();
+                dashboardWebsocket.notifyUserUpdatesForDashboard();
                 return Response.status(Response.Status.OK).entity("User restored successfully").build();
             }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to restore user").build();
@@ -234,6 +241,7 @@ public class UserService {
             boolean deleted = userBean.removeUser(username);
             if (deleted) {
                 usersWebsocket.notifyUsersUpdated();
+                dashboardWebsocket.notifyUserUpdatesForDashboard();
                 return Response.status(Response.Status.OK).entity("User deleted successfully").build();
             }
 
@@ -251,6 +259,7 @@ public class UserService {
             boolean deleted = userBean.deletePermanentlyUser(username);
             if (deleted) {
                 usersWebsocket.notifyUsersUpdated();
+                dashboardWebsocket.notifyUserUpdatesForDashboard();
                 return Response.status(Response.Status.OK).entity("User deleted successfully").build();
             }
 
@@ -336,6 +345,7 @@ public class UserService {
             boolean updatedUSer = userBean.updateUser(token, user);
             if (updatedUSer) {
                 usersWebsocket.notifyUsersUpdated();
+                dashboardWebsocket.notifyUserUpdatesForDashboard();
                 return Response.status(Response.Status.OK).entity(user).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update user").build();
@@ -474,6 +484,7 @@ public class UserService {
             } else if (userBean.registerByPO(token,user)) {
                 response = Response.status(Response.Status.CREATED).entity("User registered successfully").build();
                 usersWebsocket.notifyUsersUpdated();
+                dashboardWebsocket.notifyUserUpdatesForDashboard();
 
             } else {
                 response = Response.status(Response.Status.BAD_REQUEST).entity("Something went wrong").build();
