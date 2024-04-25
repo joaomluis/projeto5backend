@@ -33,6 +33,9 @@ public class MessageEntity implements Serializable {
     @Column(name = "is_read", nullable = false, unique = false, updatable = true)
     private boolean isRead;
 
+    @Column(name = "notification", nullable = false, unique = false, updatable = true)
+    private boolean notification;
+
     public MessageEntity() {
     }
 
@@ -82,5 +85,13 @@ public class MessageEntity implements Serializable {
 
     public void setRead(boolean read) {
         isRead = read;
+    }
+
+    public boolean isNotification() {
+        return notification;
+    }
+
+    public void setNotification(boolean notification) {
+        this.notification = notification;
     }
 }

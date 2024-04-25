@@ -1,7 +1,6 @@
 package aor.paj.websocket;
+
 import aor.paj.bean.MessageBean;
-import aor.paj.entity.MessageEntity;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.json.Json;
@@ -10,15 +9,15 @@ import jakarta.json.JsonObject;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 @Singleton
-@ServerEndpoint("/websocket/notifier/{token}")
-public class Notifier {
+@ServerEndpoint("/websocket/notification")
+public class NotificationsWebsocket {
 
     @EJB
     private MessageBean messageBean;
@@ -46,25 +45,6 @@ public class Notifier {
     public void toDoOnOpen(Session session, @PathParam("token") String token){
         System.out.println("A new WebSocket session is opened for client with token: "+ token);
         sessions.put(token,session);
-
-        String[] users = token.split("-");
-        String recipient = users[0];
-        String sender = users[1];
-
-        // Mark all messages from sender to recipient as read
-        messageBean.markMessagesAsRead(sender, recipient);
-
-        // Notify the sender that the recipient has opened their chat
-        String recipientToken = sender + "-" + recipient;
-        Session senderSession = getSessionByToken(recipientToken);
-        if (senderSession != null) {
-            String notification = "The recipient has opened their chat. Your messages are now marked as read.";
-            try {
-                senderSession.getBasicRemote().sendText(notification);
-            } catch (IOException e) {
-                System.out.println("Error sending notification to sender: " + e.getMessage());
-            }
-        }
     }
     @OnClose
     public void toDoOnClose(Session session, CloseReason reason){

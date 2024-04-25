@@ -125,7 +125,7 @@ public class TaskBean {
         if (confirmUser != null) {
             if (taskToUpdate != null) {
                 taskToUpdate.setState(newState);
-                if (newState.equals("done")) {
+                if (newState.equals("done") && taskToUpdate.getConclusionDate() == null) {
                     taskToUpdate.setConclusionDate(LocalDate.now());
                 }
                 taskDao.merge(taskToUpdate);
