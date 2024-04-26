@@ -79,6 +79,7 @@ public class MessageBean {
         for (MessageEntity message : messages) {
             if (!message.isRead() && message.getRecipient().getUsername().equals(recipient)) {
                 message.setRead(true);
+                message.setNotification(false);
                 messageDao.merge(message);
             }
         }
@@ -95,6 +96,7 @@ public class MessageBean {
         message.setSender(sender);
         message.setRecipient(recipient);
         message.setId(idTime.getTime());
+        message.setNotification(true);
 
         messageDao.persist(message);
 
