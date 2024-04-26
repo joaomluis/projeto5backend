@@ -5,10 +5,7 @@ import aor.paj.entity.MessageEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
+import jakarta.json.*;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -41,22 +38,28 @@ public class NotificationsWebsocket {
         // Get the unread messages for the user
         List<Message> unreadMessages = messageBean.getUnreadMessages(token);
 
-        
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         // Send the unread messages to the user
         for (Message message : unreadMessages) {
-            try {
-                String notification = "You have an unread message from " + message.getSender() + " sent at " + message.getSentTimestamp();
-                JsonObject jsonObject = Json.createObjectBuilder()
-                        .add("notification", notification)
-                        .build();
-                System.out.println(jsonObject.toString());
 
-                session.getBasicRemote().sendText(notification);
+                JsonObject jsonObject = Json.createObjectBuilder()
+                        .add("sender", message.getSender())
+                        .add("timestamp", message.getSentTimestamp().toString())
+                        .build();
+                jsonArrayBuilder.add(jsonObject);
+
+            }
+
+            JsonArray jsonArrayNotifications = jsonArrayBuilder.build();
+
+            try {
+                session.getBasicRemote().sendText(jsonArrayNotifications.toString());
             } catch (IOException e) {
                 System.out.println("Error sending message: " + e.getMessage());
             }
-        }
+
+
     }
     @OnClose
     public void toDoOnClose(Session session, CloseReason reason){
