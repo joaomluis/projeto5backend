@@ -85,6 +85,20 @@ public class MessageBean {
         }
     }
 
+    public List<Message> getUnreadMessages(String recipient) {
+        UserEntity recipientEntity = userDao.findUserByUsername(recipient);
+
+        List<MessageEntity> unreadMessages = messageDao.getUnreadMessages(recipientEntity);
+
+        List<Message> unreadMessagesDto = new ArrayList<>();
+
+        for (MessageEntity message : unreadMessages) {
+            unreadMessagesDto.add(convertToDto(message));
+        }
+
+        return unreadMessagesDto;
+    }
+
     private MessageEntity createMessage (UserEntity sender, UserEntity recipient, String content,boolean isRead) {
 
         Date idTime=new Date();

@@ -1,22 +1,26 @@
 package aor.paj.websocket;
-
 import aor.paj.bean.MessageBean;
+import aor.paj.dto.Message;
+import aor.paj.entity.MessageEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 @Singleton
-@ServerEndpoint("/websocket/notification")
+@ServerEndpoint("/websocket/notifications/{token}")
 public class NotificationsWebsocket {
 
     @EJB
@@ -28,23 +32,31 @@ public class NotificationsWebsocket {
         return sessions.get(token);
     }
 
-    public void send(String token, String msg){
-        Session session = sessions.get(token);
-        if (session != null){
-            System.out.println("sending.......... "+msg);
-            try {
-                session.getBasicRemote().sendText(msg);
-            } catch (IOException e) {
-                System.out.println("Something went wrong!");
-            }
-        }
-    }
-
 
     @OnOpen
     public void toDoOnOpen(Session session, @PathParam("token") String token){
         System.out.println("A new WebSocket session is opened for client with token: "+ token);
         sessions.put(token,session);
+
+        // Get the unread messages for the user
+        List<Message> unreadMessages = messageBean.getUnreadMessages(token);
+
+        
+
+        // Send the unread messages to the user
+        for (Message message : unreadMessages) {
+            try {
+                String notification = "You have an unread message from " + message.getSender() + " sent at " + message.getSentTimestamp();
+                JsonObject jsonObject = Json.createObjectBuilder()
+                        .add("notification", notification)
+                        .build();
+                System.out.println(jsonObject.toString());
+
+                session.getBasicRemote().sendText(notification);
+            } catch (IOException e) {
+                System.out.println("Error sending message: " + e.getMessage());
+            }
+        }
     }
     @OnClose
     public void toDoOnClose(Session session, CloseReason reason){

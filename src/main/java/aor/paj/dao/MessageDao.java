@@ -1,9 +1,11 @@
 package aor.paj.dao;
 
 import aor.paj.entity.MessageEntity;
+import aor.paj.entity.UserEntity;
 import jakarta.ejb.Stateless;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Stateless
 public class MessageDao extends AbstractDao<MessageEntity> {
@@ -26,5 +28,13 @@ public class MessageDao extends AbstractDao<MessageEntity> {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public List<MessageEntity> getUnreadMessages(UserEntity recipientUsername) {
+
+        String query = "SELECT m FROM MessageEntity m WHERE m.recipient = :recipient AND m.isRead = false";
+        return em.createQuery(query, MessageEntity.class)
+                .setParameter("recipient", recipientUsername)
+                .getResultList();
     }
 }
