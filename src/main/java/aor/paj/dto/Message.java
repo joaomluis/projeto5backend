@@ -21,6 +21,8 @@ public class Message {
     private String content;
     @XmlElement
     private boolean isRead;
+    @XmlElement
+    private boolean notification;
 
     public Message () {
 
@@ -78,5 +80,13 @@ public class Message {
 
     public void setSentTimestamp(LocalDateTime sentTimestamp) {
         this.sentTimestamp = sentTimestamp;
+    }
+
+    public boolean isNotification() {
+        return notification;
+    }
+
+    public void setNotification(boolean notification) {
+        this.notification = notification;
     }
 }

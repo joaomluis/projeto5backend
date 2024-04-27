@@ -99,6 +99,16 @@ public class MessageBean {
         return unreadMessagesDto;
     }
 
+    public void markNotificationsAsRead(String recipient) {
+        List<MessageEntity> messages = messageDao.findNotificationsByRecipient(recipient);
+        for (MessageEntity message : messages) {
+            if (message.isNotification() && message.getRecipient().getUsername().equals(recipient)) {
+                message.setNotification(false);
+                messageDao.merge(message);
+            }
+        }
+    }
+
     private MessageEntity createMessage (UserEntity sender, UserEntity recipient, String content,boolean isRead) {
 
         Date idTime=new Date();
@@ -134,6 +144,7 @@ public class MessageBean {
         message.setRecipient(messageEntity.getRecipient().getUsername());
         message.setContent(messageEntity.getContent());
         message.setRead(messageEntity.isRead());
+        message.setNotification(messageEntity.isNotification());
         return message;
     }
 

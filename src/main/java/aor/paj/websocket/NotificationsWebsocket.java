@@ -46,6 +46,7 @@ public class NotificationsWebsocket {
                 JsonObject jsonObject = Json.createObjectBuilder()
                         .add("sender", message.getSender())
                         .add("timestamp", message.getSentTimestamp().toString())
+                        .add("not_read", message.isNotification())
                         .build();
                 jsonArrayBuilder.add(jsonObject);
 
@@ -72,26 +73,17 @@ public class NotificationsWebsocket {
     public void toDoOnMessage(Session session, String msg){
         System.out.println("A new message is received: "+ msg);
 
-        String sender;
-        String recipient;
-        String content;
+        // Parse the received message
+        JsonObject jsonObject = Json.createReader(new StringReader(msg)).readObject();
+        String type = jsonObject.getString("type");
 
+        // Check if the type is "MARK_AS_READ"
+        if ("MARK_AS_READ".equals(type)) {
+            String recipient = jsonObject.getString("recipient");
 
-
-        try {
-            JsonObject jsonObject = Json.createReader(new StringReader(msg)).readObject();
-            sender = jsonObject.getString("sender");
-            recipient = jsonObject.getString("recipient");
-            content = jsonObject.getString("content");
-
-        } catch (JsonException e) {
-            System.out.println("Error parsing JSON: " + e.getMessage());
-            return;
+            // Mark all unread messages as read
+            messageBean.markNotificationsAsRead(recipient);
         }
-
-        messageBean.handleMessage(session, content, sender, recipient);
-
-
 
     }
 }

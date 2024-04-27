@@ -37,4 +37,11 @@ public class MessageDao extends AbstractDao<MessageEntity> {
                 .setParameter("recipient", recipientUsername)
                 .getResultList();
     }
+
+    public List<MessageEntity> findNotificationsByRecipient(String recipient) {
+        String query = "SELECT m FROM MessageEntity m WHERE m.recipient.username = :recipient AND m.notification = true";
+        return em.createQuery(query, MessageEntity.class)
+                .setParameter("recipient", recipient)
+                .getResultList();
+    }
 }
