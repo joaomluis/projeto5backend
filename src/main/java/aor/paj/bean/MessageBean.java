@@ -5,6 +5,7 @@ import aor.paj.dao.UserDao;
 import aor.paj.dto.Message;
 import aor.paj.entity.MessageEntity;
 import aor.paj.entity.UserEntity;
+import aor.paj.websocket.NotificationsWebsocket;
 import aor.paj.websocket.Notifier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,6 +13,8 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.websocket.Session;
 
@@ -31,6 +34,8 @@ public class MessageBean {
     UserDao userDao;
     @EJB
     Notifier notifier;
+    @EJB
+    NotificationsWebsocket notificationsWebsocket;
 
     @Inject
     UserBean userBean;
@@ -111,7 +116,7 @@ public class MessageBean {
 
     private MessageEntity createMessage (UserEntity sender, UserEntity recipient, String content,boolean isRead) {
 
-        Date idTime=new Date();
+        Date idTime = new Date();
 
         MessageEntity message = new MessageEntity();
         message.setSentTimestamp(LocalDateTime.now());
@@ -123,6 +128,28 @@ public class MessageBean {
         message.setNotification(true);
 
         messageDao.persist(message);
+
+
+        String recipientToken = recipient.getUsername() + "-" + sender.getUsername();
+        Session chatRecipientSenderSession = notifier.getSessionByToken(recipientToken);
+        Session recipientSession = notificationsWebsocket.getSessionByToken(recipient.getUsername());
+        if (recipientSession != null && chatRecipientSenderSession == null) {
+            // If the recipient is logged in, send them a notification
+            try {
+                JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+                JsonObject jsonObject = Json.createObjectBuilder()
+                        .add("sender", sender.getUsername())
+                        .add("timestamp", message.getSentTimestamp().toString())
+                        .add("not_read", message.isNotification())
+                        .build();
+                jsonArrayBuilder.add(jsonObject);
+                JsonArray jsonArray = jsonArrayBuilder.build();
+
+                recipientSession.getBasicRemote().sendText(jsonArray.toString());
+            } catch (IOException e) {
+                System.out.println("Error sending notification: " + e.getMessage());
+            }
+        }
 
         return message;
     }
