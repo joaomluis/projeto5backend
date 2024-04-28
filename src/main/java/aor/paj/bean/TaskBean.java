@@ -42,6 +42,7 @@ public class TaskBean {
         CategoryEntity categoryEntity = categoryDao.findCategoryById(Long.parseLong(categoryId));
 
         if(userEntity != null){
+            userBean.refreshUserToken(userEntity.getUsername());
             TaskEntity taskEntity = convertTaskToTaskEntity(task);
             taskEntity.setOwner(userEntity);
             taskEntity.setCategory(categoryEntity);
@@ -51,7 +52,7 @@ public class TaskBean {
         return false;
     }
 
-    public boolean isTaskTitleAvailable(Task task) { //No user estou a passar diretamento o username, aqui passo o objeto todo??
+    public boolean isTaskTitleAvailable(Task task) {
 
         TaskEntity taskEntity = taskDao.findTaskByTitle(task.getTitle());
 
@@ -86,6 +87,7 @@ public class TaskBean {
             if (taskToUpdate != null) {
                 if (newCategory != null) {
 
+                    userBean.refreshUserToken(confirmUser.getUsername());
                     //verifica a função do user e se tem permissão para editar a tarefa
                     if (confirmUser.getTypeOfUser().equals("developer") && taskToUpdate.getOwner().equals(confirmUser)
                             || confirmUser.getTypeOfUser().equals("scrum_master")
@@ -124,6 +126,7 @@ public class TaskBean {
 
         if (confirmUser != null) {
             if (taskToUpdate != null) {
+                userBean.refreshUserToken(confirmUser.getUsername());
                 taskToUpdate.setState(newState);
                 if (newState.equals("done") && taskToUpdate.getConclusionDate() == null) {
                     taskToUpdate.setConclusionDate(LocalDate.now());
@@ -149,6 +152,7 @@ public class TaskBean {
         if (confirmUser != null) {
             if (taskToUpdate != null) {
                 if (newCategory != null) {
+                    userBean.refreshUserToken(confirmUser.getUsername());
                     taskToUpdate.setCategory(convertCategoryToCategoryEntity(category));
                     taskDao.merge(taskToUpdate);
                     status = true;
@@ -174,6 +178,7 @@ public class TaskBean {
         if (confirmUser != null) {
             if (taskToUpdate != null) {
 
+                userBean.refreshUserToken(confirmUser.getUsername());
                 if(taskToUpdate.isActive()) {
                     taskToUpdate.setActive(false);
                 } else {
@@ -200,6 +205,7 @@ public class TaskBean {
 
         if (confirmUser != null) {
             if (tasksToDelete != null) {
+                userBean.refreshUserToken(confirmUser.getUsername());
                 for (TaskEntity taskEntity : tasksToDelete) {
                     taskEntity.setActive(false);
                 }
@@ -222,6 +228,7 @@ public class TaskBean {
 
         if (confirmUser != null) {
             if (taskToDelete != null) {
+                userBean.refreshUserToken(confirmUser.getUsername());
                 taskDao.remove(taskToDelete);
                 status = true;
             } else {

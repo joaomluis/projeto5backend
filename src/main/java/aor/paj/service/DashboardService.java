@@ -31,6 +31,10 @@ public class DashboardService {
     public Response getStatistics(@HeaderParam("token") String token) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
 
@@ -47,6 +51,10 @@ public class DashboardService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTasksStatistics(@HeaderParam("token") String token) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();

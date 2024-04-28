@@ -32,7 +32,7 @@ public class MessageDao extends AbstractDao<MessageEntity> {
 
     public List<MessageEntity> getUnreadMessages(UserEntity recipientUsername) {
 
-        String query = "SELECT m FROM MessageEntity m WHERE m.recipient = :recipient AND m.isRead = false";
+        String query = "SELECT m FROM MessageEntity m WHERE m.recipient = :recipient AND m.isRead = false ORDER BY m.sentTimestamp DESC";
         return em.createQuery(query, MessageEntity.class)
                 .setParameter("recipient", recipientUsername)
                 .getResultList();

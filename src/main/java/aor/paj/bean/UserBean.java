@@ -60,7 +60,12 @@ public class UserBean implements Serializable {
             if (userEntity.getPassword().equals(user.getPassword())){
                 String token = generateNewToken();
                 userEntity.setToken(token);
+                userEntity.setTokenValidity(LocalDateTime.now().plusHours(1));
+
+
                 User loggedInUser = (convertUserEntityToUserLogged(userEntity));
+
+                loggedInUser.setTokenValidity(userEntity.getTokenValidity());
 
                 logger.info("User " + user.getUsername() + " logged in");
 
@@ -68,6 +73,39 @@ public class UserBean implements Serializable {
             }
         }
         return null;
+    }
+
+    public void refreshUserToken(String username) {
+        UserEntity userEntity = userDao.findUserByUsername(username);
+        if (userEntity != null) {
+            userEntity.setTokenValidity(LocalDateTime.now().plusMinutes(userEntity.getTokenRefreshTime()));
+            userDao.update(userEntity);
+        }
+    }
+
+    public boolean updateTokenRefreshTime(String token, int newRefreshTime) {
+        UserEntity userEntity = userDao.findUserByToken(token);
+
+        List<UserEntity> allUsers = userDao.findAllUsers();
+
+        if (userEntity != null && userEntity.getTypeOfUser().equals("product_owner")) {
+            for (UserEntity user : allUsers) {
+
+                user.setTokenRefreshTime(newRefreshTime);
+                userDao.update(user);
+
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isTokenExpired(String token) {
+        UserEntity userEntity = userDao.findUserByToken(token);
+        if (userEntity != null) {
+            return LocalDateTime.now().isAfter(userEntity.getTokenValidity());
+        }
+        return true;
     }
 
     public List<User> getAllUsers() {
@@ -130,10 +168,12 @@ public class UserBean implements Serializable {
         if (token == null || token.isEmpty()) {
             return false;
         }
+        UserEntity userEntityPO = userDao.findUserByToken(token);
         UserEntity userEntity = userDao.findUserByUsername(username);
         if (userEntity == null) {
             return false;
         }
+        refreshUserToken(userEntityPO.getUsername());
 
         if (updatedUser.getEmail() != null ) {
             userEntity.setEmail(updatedUser.getEmail());
@@ -170,6 +210,7 @@ public class UserBean implements Serializable {
         if (userEntity == null) {
             return false;
         }
+        refreshUserToken(userEntity.getUsername());
 
         if (updatedUser.getEmail() != null ) {
             userEntity.setEmail(updatedUser.getEmail());
@@ -198,9 +239,12 @@ public class UserBean implements Serializable {
             return null;
         }
         UserEntity userEntity = userDao.findUserByToken(token);
+
         if (userEntity == null) {
             return null;
         }
+
+        refreshUserToken(userEntity.getUsername());
 
         if (updatedUser.getEmail() != null ) {
             userEntity.setEmail(updatedUser.getEmail());
@@ -239,6 +283,7 @@ public class UserBean implements Serializable {
         if (userEntity == null) {
             return false;
         }
+        refreshUserToken(userEntity.getUsername());
         userEntity.setPassword(encryptHelper.encryptPassword(newPassword));
         return userDao.update(userEntity);
     }
@@ -332,6 +377,8 @@ public class UserBean implements Serializable {
             userDto.setToken(userEntity.getToken());
             userDto.setTypeOfUser(userEntity.getTypeOfUser());
             userDto.setImgURL(userEntity.getImgURL());
+            userDto.setTokenValidity(userEntity.getTokenValidity());
+            userDto.setTokenRefreshTime(userEntity.getTokenRefreshTime());
 
             return userDto;
         }
@@ -365,6 +412,7 @@ public class UserBean implements Serializable {
         userEntity.setConfirmationToken(user.getConfirmationToken());
         userEntity.setConfirmationTokenDate(user.getConfirmationTokenDate());
         userEntity.setRegistrationDate(user.getRegistrationDate());
+        userEntity.setTokenRefreshTime(user.getTokenRefreshTime());
 
         return userEntity;
     }
@@ -386,14 +434,17 @@ public class UserBean implements Serializable {
         UserEntity userEntityPO = userDao.findUserByToken(token);
 
         if(userEntityPO != null && userEntityPO.getTypeOfUser().equals("product_owner")) {
+            refreshUserToken(userEntityPO.getUsername());
 
             UserEntity u = userDao.findUserByUsername(user.getUsername());
+
 
             if (u == null) {
 
                 String confirmationToken = generateNewToken();
                 user.setConfirmationToken(confirmationToken);
                 user.setConfirmationTokenDate(LocalDateTime.now().plusDays(1));
+                user.setTokenRefreshTime(60);
 
                 user.setPassword(encryptHelper.encryptPassword(user.getPassword()));
                 user.setRegistrationDate(LocalDate.now());
@@ -558,6 +609,7 @@ public class UserBean implements Serializable {
         boolean wasRemovedToken = false;
         if(userEntity != null){
             wasRemovedToken = userDao.removedToken(userEntity);
+            userEntity.setTokenValidity(null);
         }
 
         return wasRemovedToken;
@@ -603,18 +655,6 @@ public class UserBean implements Serializable {
         return valideNumber;
     }
 
-    //verifica se um URL é válido
-    public boolean isValidUrl(String urlString) {
-        try {
-
-            new URL(urlString);
-            return true;
-        } catch (MalformedURLException e) {
-
-            return false;
-        }
-    }
-
     //verifica se um email é válido
     public boolean isValidEmail(String email) {
         boolean isValid = false;
@@ -642,6 +682,7 @@ public class UserBean implements Serializable {
             admin.setTypeOfUser("product_owner");
             admin.setConfirmed(true);
             admin.setRegistrationDate(LocalDate.now());
+            admin.setTokenRefreshTime(60);
 
 
             register(admin);
@@ -661,6 +702,7 @@ public class UserBean implements Serializable {
             deletedUser.setActive(false);
             deletedUser.setConfirmed(true);
             deletedUser.setRegistrationDate(LocalDate.now());
+            deletedUser.setTokenRefreshTime(60);
 
             register(deletedUser);
         }
@@ -679,6 +721,7 @@ public class UserBean implements Serializable {
             celso.setActive(true);
             celso.setConfirmed(true);
             celso.setRegistrationDate(LocalDate.now());
+            celso.setTokenRefreshTime(60);
 
             register(celso);
         }
@@ -697,6 +740,7 @@ public class UserBean implements Serializable {
             celsoSm.setActive(true);
             celsoSm.setConfirmed(true);
             celsoSm.setRegistrationDate(LocalDate.now());
+            celsoSm.setTokenRefreshTime(60);
 
 
             register(celsoSm);
@@ -716,6 +760,7 @@ public class UserBean implements Serializable {
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
             celsoPo.setRegistrationDate(LocalDate.now());
+            celsoPo.setTokenRefreshTime(60);
 
             register(celsoPo);
         }
@@ -734,6 +779,7 @@ public class UserBean implements Serializable {
             celsinho.setActive(true);
             celsinho.setConfirmed(true);
             celsinho.setRegistrationDate(LocalDate.now());
+            celsinho.setTokenRefreshTime(60);
 
             register(celsinho);
         }
@@ -752,6 +798,7 @@ public class UserBean implements Serializable {
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
             celsoPo.setRegistrationDate(LocalDate.now());
+            celsoPo.setTokenRefreshTime(60);
 
             register(celsoPo);
         }
@@ -770,6 +817,7 @@ public class UserBean implements Serializable {
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
             celsoPo.setRegistrationDate(LocalDate.now());
+            celsoPo.setTokenRefreshTime(60);
 
             register(celsoPo);
 
@@ -790,6 +838,7 @@ public class UserBean implements Serializable {
             celsoPo.setActive(true);
             celsoPo.setConfirmed(true);
             celsoPo.setRegistrationDate(LocalDate.now());
+            celsoPo.setTokenRefreshTime(60);
 
             register(celsoPo);
         }

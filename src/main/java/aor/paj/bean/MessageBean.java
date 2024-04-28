@@ -53,6 +53,8 @@ public class MessageBean {
             return;
         }
 
+        userBean.refreshUserToken(senderEntity.getUsername());
+
         // Verifica se o outro user tmb tem o chat aberto
         String recipientToken = recipient + "-" + sender;
         Session recipientSession = notifier.getSessionByToken(recipientToken);
@@ -134,7 +136,7 @@ public class MessageBean {
         Session chatRecipientSenderSession = notifier.getSessionByToken(recipientToken);
         Session recipientSession = notificationsWebsocket.getSessionByToken(recipient.getUsername());
         if (recipientSession != null && chatRecipientSenderSession == null) {
-            // If the recipient is logged in, send them a notification
+
             try {
                 JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
                 JsonObject jsonObject = Json.createObjectBuilder()
@@ -154,14 +156,6 @@ public class MessageBean {
         return message;
     }
 
-    private MessageEntity convertToEntity(Message message) {
-        MessageEntity messageEntity = new MessageEntity();
-        messageEntity.setId(message.getId());
-        messageEntity.setSentTimestamp(message.getSentTimestamp());
-        messageEntity.setContent(message.getContent());
-        messageEntity.setRead(message.isRead());
-        return messageEntity;
-    }
 
     private Message convertToDto(MessageEntity messageEntity) {
         Message message = new Message();

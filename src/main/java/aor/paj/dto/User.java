@@ -36,6 +36,10 @@ public class User{
     private LocalDateTime confirmationTokenDate;
     @XmlElement
     private LocalDate registrationDate;
+    @XmlElement
+    private int tokenRefreshTime;
+    @XmlElement
+    private LocalDateTime tokenValidity;
 
 
 
@@ -51,6 +55,7 @@ public class User{
         this.token = token;
         this.typeOfUser = getTypeOfUser();
         this.isActive = true;
+        this.tokenRefreshTime = 60;
     }
 
     public User(){}
@@ -166,6 +171,22 @@ public class User{
 
     public void setRegistrationDate(LocalDate registrationDate) {
         this.registrationDate = registrationDate;
+    }
+
+    public int getTokenRefreshTime() {
+        return tokenRefreshTime;
+    }
+
+    public void setTokenRefreshTime(int tokenRefreshTime) {
+        this.tokenRefreshTime = tokenRefreshTime;
+    }
+
+    public LocalDateTime getTokenValidity() {
+        return tokenValidity;
+    }
+
+    public void setTokenValidity(LocalDateTime tokenValidity) {
+        this.tokenValidity = tokenValidity;
     }
 }
 

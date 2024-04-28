@@ -27,6 +27,10 @@ public class MessageService {
     public Response getAllMessages(@HeaderParam("token") String token, @PathParam("sender") String sender, @PathParam("recipient") String recipient) {
         List<Message> messages;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         User user = userBean.getUserByToken(token);
         User recipientUser = userBean.getUserByUsername(recipient);
 

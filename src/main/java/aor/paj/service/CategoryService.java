@@ -34,6 +34,10 @@ public class CategoryService {
     public Response addCategory(@HeaderParam("token") String token, Category category) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (!categoryBean.isUserAllowedToInteractWithCategories(token)) {
             response = Response.status(403).entity("You dont have permissions to do that").build();
 
@@ -61,6 +65,10 @@ public class CategoryService {
     public Response updateCategory(@HeaderParam("token") String token, @PathParam("id") String id, Category category) {
 
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
@@ -93,6 +101,10 @@ public class CategoryService {
 
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
 
@@ -120,6 +132,10 @@ public class CategoryService {
     public Response getAllCategories(@HeaderParam("token") String token) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
 
@@ -138,6 +154,10 @@ public class CategoryService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCategoryById(@HeaderParam("token") String token, @PathParam("id") String id) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();

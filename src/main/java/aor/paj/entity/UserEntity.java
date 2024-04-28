@@ -52,9 +52,14 @@ public class UserEntity implements Serializable{
 	@Column(name="token", nullable=true, unique = true, updatable = true)
 	private String token;
 
+	@Column(name="tokenValidity", nullable=true, unique = false, updatable = true)
+	private LocalDateTime tokenValidity;
+
+	@Column(name="tokenRefreshTime", nullable=true, unique = false, updatable = true)
+	private int tokenRefreshTime;
+
 	@Column(name="password", nullable=false, unique = false, updatable = true)
 	private String password;
-
 
 	@Column(name="imgURL", nullable=false, unique = false, updatable = true)
 	private String imgURL;
@@ -203,5 +208,21 @@ public class UserEntity implements Serializable{
 
 	public void setRegistrationDate(LocalDate registrationDate) {
 		this.registrationDate = registrationDate;
+	}
+
+	public LocalDateTime getTokenValidity() {
+		return tokenValidity;
+	}
+
+	public void setTokenValidity(LocalDateTime tokenValidity) {
+		this.tokenValidity = tokenValidity;
+	}
+
+	public int getTokenRefreshTime() {
+		return tokenRefreshTime;
+	}
+
+	public void setTokenRefreshTime(int tokenRefreshTime) {
+		this.tokenRefreshTime = tokenRefreshTime;
 	}
 }

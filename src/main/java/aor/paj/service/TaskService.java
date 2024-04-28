@@ -49,6 +49,10 @@ public class TaskService {
 
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
 
@@ -86,6 +90,10 @@ public class TaskService {
                                @HeaderParam("taskId") String taskId, Task task) {
 
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
@@ -126,6 +134,11 @@ public class TaskService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateTaskCategory(@HeaderParam("token") String token, @PathParam("taskId") String taskId, Category category) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         User requestingUser = userBean.getUserByToken(token);
 
         if (userBean.getUserByToken(token) == null) {
@@ -150,6 +163,11 @@ public class TaskService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateTaskStatus(@HeaderParam("token") String token, @PathParam("taskId") String taskId, @HeaderParam("newState") String state) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
 
         //JsonObject jsonObject = Json.createReader(new StringReader(state)).readObject();
         //String newStatusConverted = jsonObject.getString("state");
@@ -192,6 +210,10 @@ public class TaskService {
     public Response softDeleteTask(@HeaderParam("token") String token, @PathParam("taskId") String taskId) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
@@ -216,6 +238,10 @@ public class TaskService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTasks(@HeaderParam("token") String token, @QueryParam("username") String username, @QueryParam("category") String category) {
         List<Task> tasks;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         User user = userBean.getUserByToken(token);
         if (user == null) {
@@ -243,6 +269,10 @@ public class TaskService {
     public Response getSoftDeletedTasks(@HeaderParam("token") String token) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         ArrayList<Task> softDeletedTasks = taskBean.getSoftDeletedTasks();
 
         if (userBean.getUserByToken(token) == null) {
@@ -269,6 +299,10 @@ public class TaskService {
     ) String token, @PathParam("username") String username) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
 
@@ -292,6 +326,10 @@ public class TaskService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response hardDeleteTask(@HeaderParam("token") String token, @PathParam("id") String id) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();
@@ -318,6 +356,11 @@ public class TaskService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserTasksByCategory(@HeaderParam("token") String token, @QueryParam("username") String username,@QueryParam("category") long category) {
          User user = userBean.getUserByToken(token);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (user == null) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid token").build();
         }
@@ -345,6 +388,10 @@ public class TaskService {
     public Response getAllTasks(@HeaderParam("token") String token) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         ArrayList<Task> tasks = taskBean.getAllTasks(token);
 
         if (userBean.getUserByToken(token) == null) {
@@ -365,6 +412,10 @@ public class TaskService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getActiveTasks(@HeaderParam("token") String token) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         ArrayList<Task> tasks = taskBean.getActiveTasks(token);
 
@@ -387,6 +438,10 @@ public class TaskService {
     public Response getTaskById(@HeaderParam("token") String token, @PathParam("id") String id) {
         Response response;
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         Task task = taskBean.getTaskById(token, id);
 
         if (userBean.getUserByToken(token) == null) {
@@ -406,6 +461,10 @@ public class TaskService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStatistics(@HeaderParam("token") String token, @HeaderParam("username") String username) {
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();

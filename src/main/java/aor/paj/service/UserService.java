@@ -61,6 +61,7 @@ public class UserService {
         } else if (!isEmailValid) {
             response = Response.status(422).entity("Invalid email").build();
 
+
         } else if (!isUsernameAvailable) {
             response = Response.status(Response.Status.CONFLICT).entity("Username already in use").build(); //status code 409
 
@@ -82,6 +83,40 @@ public class UserService {
 
         return response;
     }
+
+    @PUT
+    @Path("/updateTokenTime")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateTokenTime(@HeaderParam("token") String token, String newTokenTime) {
+        User user = userBean.getUserByToken(token);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
+        if (newTokenTime == null || newTokenTime.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Token time is missing").build();
+        }
+
+        JsonObject jsonObject = Json.createReader(new StringReader(newTokenTime)).readObject();
+        String newTokenTimeExtrated = jsonObject.getString("tokenTime");
+
+        if (user != null) {
+
+            int newTokenTimeInt = Integer.parseInt(newTokenTimeExtrated);
+
+            if (userBean.updateTokenRefreshTime(token, newTokenTimeInt)) {
+                return Response.status(Response.Status.OK).entity("Token time updated").build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update token time").build();
+            }
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
+        }
+    }
+
+
     @PUT
     @Path("/updateUser")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -99,7 +134,10 @@ public class UserService {
 
         if (user != null) {
 
-            if (!isEmailValid) {
+            if (userBean.isTokenExpired(token)) {
+                response = Response.status(401).entity("Token Expired").build();
+
+            } else if (!isEmailValid) {
                 response = Response.status(422).entity("Invalid email").build();
 
             } else if (!isImageValid) {
@@ -161,7 +199,10 @@ public class UserService {
         List<User> allUsers = userBean.getAllUsers();
         User userRequest = userBean.getUserByToken(token);
 
-        if (userRequest == null) {
+        if (userBean.isTokenExpired(token)) {
+             return Response.status(401).entity("Token Expired").build();
+
+        } else if (userRequest == null) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized access").build();
         } else if (allUsers != null && !allUsers.isEmpty()) {
             return Response.ok(allUsers).build();
@@ -179,6 +220,10 @@ public class UserService {
         User userRequest = userBean.getUserByToken(token);
         if (userRequest != null && (userRequest.getTypeOfUser().equals("product_owner") || userRequest.getTypeOfUser().equals("scrum_master"))) {
             List<User> activeUsers = userBean.getActiveUsers();
+
+            if (userBean.isTokenExpired(token)) {
+                return Response.status(401).entity("Token Expired").build();
+            }
 
             if (activeUsers != null && !activeUsers.isEmpty()) {
                 return Response.ok(activeUsers).build();
@@ -201,6 +246,10 @@ public class UserService {
         if (userRequest != null && (userRequest.getTypeOfUser().equals("product_owner"))) {
             List<User> inactiveUsers = userBean.getInactiveUsers();
 
+            if (!userBean.isTokenExpired(token)) {
+                return Response.status(401).entity("Token Expired").build();
+            }
+
             if (inactiveUsers != null && !inactiveUsers.isEmpty()) {
                 return Response.ok(inactiveUsers).build();
             } else {
@@ -220,6 +269,11 @@ public class UserService {
     public Response restoreUser(@HeaderParam("token") String token, @PathParam("username") String username) {
 
         User user = userBean.getUserByToken(token);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (user != null && (user.getTypeOfUser().equals("product_owner"))) {
             boolean restored = userBean.restoreUser(username);
             if (restored) {
@@ -237,6 +291,11 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteUser(@HeaderParam("token") String token, @HeaderParam("username") String username) {
         User user = userBean.getUserByToken(token);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (user != null && (user.getTypeOfUser().equals("product_owner"))) {
             boolean deleted = userBean.removeUser(username);
             if (deleted) {
@@ -255,6 +314,11 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response removeUser(@HeaderParam("token") String token, @HeaderParam("username") String username) {
         User user = userBean.getUserByToken(token);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         if (user != null && (user.getTypeOfUser().equals("product_owner"))) {
             boolean deleted = userBean.deletePermanentlyUser(username);
             if (deleted) {
@@ -284,6 +348,8 @@ public class UserService {
                     .add("typeOfUser", loggedUser.getTypeOfUser())
                     .add("imgURL", loggedUser.getImgURL())
                     .add("token", loggedUser.getToken())
+                    .add("tokenRefreshTime", loggedUser.getTokenRefreshTime())
+                    .add("tokenValidity", loggedUser.getTokenValidity().toString())
                     .build();
             // Retornar a resposta com o token
             return Response.status(200).entity(jsonResponse).build();
@@ -303,6 +369,10 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(@HeaderParam("token") String token, User updatedUser) {
         User user = userBean.getUserByToken(token);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (user != null) {
             if (updatedUser.getEmail() != null) {
@@ -362,6 +432,10 @@ public class UserService {
     public Response updatePassword(@HeaderParam("token") String token, PasswordUpdateDto passwordUpdateDto) {
         User user = userBean.getUserByToken(token);
 
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
+
         String currentPassword = passwordUpdateDto.getCurrentPassword();
         String newPassword = passwordUpdateDto.getNewPassword();
         String confirmPassword = passwordUpdateDto.getConfirmPassword();
@@ -395,6 +469,10 @@ public class UserService {
     public Response updateUserByPO(@HeaderParam("token") String token, @HeaderParam("username") String username, User updatedUser) {
         User userRequest = userBean.getUserByToken(token);
         User beModified = userBean.getUserByUsername(username);
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
 
         if (userRequest != null && (userRequest.getTypeOfUser()).equals("product_owner")) {
@@ -449,6 +527,10 @@ public class UserService {
     public Response updateUserByPO(@HeaderParam("token") String token, User user) {
         User userRequest = userBean.getUserByToken(token);
         Response response;
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         String dummyPassword = userBean.generateNewToken();
         user.setPassword(dummyPassword);
@@ -507,6 +589,10 @@ public class UserService {
 
         JsonObject jsonObject = Json.createReader(new StringReader(newRole)).readObject();
         String newRoleConverted = jsonObject.getString("typeOfUser");
+
+        if (userBean.isTokenExpired(token)) {
+            return Response.status(401).entity("Token Expired").build();
+        }
 
         if (userBean.getUserByToken(token) == null) {
             response = Response.status(403).entity("Invalid token").build();

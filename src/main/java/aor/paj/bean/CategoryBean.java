@@ -41,6 +41,7 @@ public class CategoryBean {
 
         if(userEntity != null && userEntity.getTypeOfUser().equals("product_owner")) {
             if (category != null) {
+                userBean.refreshUserToken(userEntity.getUsername());
                 CategoryEntity categoryEntity = convertCategoryToCategoryEntity(category);
                 categoryEntity.setOwner(userEntity);
                 categoryDao.persist(categoryEntity);
@@ -59,6 +60,7 @@ public class CategoryBean {
 
         if (confirmUser != null) {
             if (categoryToUpdate != null) {
+                userBean.refreshUserToken(confirmUser.getUsername());
                 categoryToUpdate.setTitle(category.getTitle());
                 categoryToUpdate.setDescription(category.getDescription());
 
@@ -81,6 +83,7 @@ public class CategoryBean {
 
         if (confirmUser != null) {
             if (categoryToDelete != null) {
+                userBean.refreshUserToken(confirmUser.getUsername());
                 categoryDao.remove(categoryToDelete);
                 status = true;
             } else {
@@ -130,21 +133,6 @@ public class CategoryBean {
         }
     }
 
-    public Long getCategoryIdByTitle( String token, String title){
-        UserEntity userEntity = userDao.findUserByToken(token);
-        CategoryEntity categoryEntity = categoryDao.findCategoryByTitle(title);
-
-        if(userEntity != null && userEntity.getTypeOfUser().equals("product_owner") || userEntity.getTypeOfUser().equals("scrum_master")){
-            if(categoryEntity != null){
-                return categoryEntity.getIdCategory();
-            }else{
-                return null;
-            }
-        }else{
-            return null;
-        }
-
-    }
 
     public boolean isCategoryInUse(String id) {
 
