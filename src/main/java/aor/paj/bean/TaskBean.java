@@ -17,9 +17,13 @@ import jakarta.ejb.Singleton;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Singleton
 public class TaskBean {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @EJB
     UserDao userDao;
@@ -47,6 +51,7 @@ public class TaskBean {
             taskEntity.setOwner(userEntity);
             taskEntity.setCategory(categoryEntity);
             taskDao.persist(taskEntity);
+            logger.info("Task added by user: " + userEntity.getUsername());
             return true;
         }
         return false;
@@ -102,6 +107,7 @@ public class TaskBean {
                         taskToUpdate.setCategory(newCategory);
 
                         taskDao.merge(taskToUpdate);
+                        logger.info("Task updated by user: " + confirmUser.getUsername());
                         status = true;
                     } else {
                         status = false;
@@ -115,6 +121,7 @@ public class TaskBean {
         } else {
             status = false;
         }
+
         return status;
     }
 
@@ -132,6 +139,7 @@ public class TaskBean {
                     taskToUpdate.setConclusionDate(LocalDate.now());
                 }
                 taskDao.merge(taskToUpdate);
+                logger.info("Task state updated by user: " + confirmUser.getUsername());
                 status = true;
             } else {
                 status = false;
@@ -139,6 +147,7 @@ public class TaskBean {
         } else {
             status = false;
         }
+
         return status;
     }
 
@@ -155,6 +164,7 @@ public class TaskBean {
                     userBean.refreshUserToken(confirmUser.getUsername());
                     taskToUpdate.setCategory(convertCategoryToCategoryEntity(category));
                     taskDao.merge(taskToUpdate);
+                    logger.info("Task category updated by user: " + confirmUser.getUsername());
                     status = true;
                 } else {
                     status = false;
@@ -187,6 +197,7 @@ public class TaskBean {
 
 
                 taskDao.merge(taskToUpdate);
+                logger.info("Task active state updated by user: " + confirmUser.getUsername());
                 status = true;
             } else {
                 status = false;
@@ -209,6 +220,7 @@ public class TaskBean {
                 for (TaskEntity taskEntity : tasksToDelete) {
                     taskEntity.setActive(false);
                 }
+                logger.info("Tasks soft deleted by user: " + confirmUser.getUsername());
                 status = true;
             } else {
                 status = false;
@@ -230,6 +242,7 @@ public class TaskBean {
             if (taskToDelete != null) {
                 userBean.refreshUserToken(confirmUser.getUsername());
                 taskDao.remove(taskToDelete);
+                logger.info("Task deleted by user: " + confirmUser.getUsername());
                 status = true;
             } else {
                 status = false;

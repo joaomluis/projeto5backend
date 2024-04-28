@@ -11,6 +11,8 @@ import aor.paj.entity.UserEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Singleton;
 import jakarta.inject.Inject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +20,7 @@ import java.util.Date;
 @Singleton
 public class CategoryBean {
 
+    private static final Logger logger = LogManager.getLogger();
 
     @EJB
     UserDao userDao;
@@ -45,6 +48,7 @@ public class CategoryBean {
                 CategoryEntity categoryEntity = convertCategoryToCategoryEntity(category);
                 categoryEntity.setOwner(userEntity);
                 categoryDao.persist(categoryEntity);
+                logger.info("Category added successfully by user: " + userEntity.getUsername() + " with id: " + categoryEntity.getIdCategory());
                 return true;
             }
         }
@@ -65,6 +69,7 @@ public class CategoryBean {
                 categoryToUpdate.setDescription(category.getDescription());
 
                 categoryDao.merge(categoryToUpdate);
+                logger.info("Category updated successfully by user: " + confirmUser.getUsername() + " with id: " + categoryToUpdate.getIdCategory());
                 status = true;
             } else {
                 status = false;
@@ -85,6 +90,7 @@ public class CategoryBean {
             if (categoryToDelete != null) {
                 userBean.refreshUserToken(confirmUser.getUsername());
                 categoryDao.remove(categoryToDelete);
+                logger.info("Category deleted successfully by user: " + confirmUser.getUsername() + " with id: " + categoryToDelete.getIdCategory());
                 status = true;
             } else {
                 status = false;

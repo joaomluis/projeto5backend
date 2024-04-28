@@ -44,4 +44,11 @@ public class MessageDao extends AbstractDao<MessageEntity> {
                 .setParameter("recipient", recipient)
                 .getResultList();
     }
+
+    public List<MessageEntity> findMessagesByUser(String username) {
+        String query = "SELECT m FROM MessageEntity m WHERE m.sender.username = :username OR m.recipient.username = :username";
+        return em.createQuery(query, MessageEntity.class)
+                .setParameter("username", username)
+                .getResultList();
+    }
 }

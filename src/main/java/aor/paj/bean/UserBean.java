@@ -1,12 +1,14 @@
 package aor.paj.bean;
 
 import aor.paj.dao.CategoryDao;
+import aor.paj.dao.MessageDao;
 import aor.paj.dao.TaskDao;
 import aor.paj.dao.UserDao;
 import aor.paj.dto.LoginDto;
 import aor.paj.dto.User;
 import aor.paj.dto.UserDetails;
 import aor.paj.entity.CategoryEntity;
+import aor.paj.entity.MessageEntity;
 import aor.paj.entity.TaskEntity;
 import aor.paj.entity.UserEntity;
 import aor.paj.utils.EncryptHelper;
@@ -45,6 +47,9 @@ public class UserBean implements Serializable {
 
     @EJB
     CategoryDao categoryDao;
+
+    @EJB
+    MessageDao messageDao;
 
     @EJB
     EncryptHelper encryptHelper;
@@ -197,6 +202,8 @@ public class UserBean implements Serializable {
             userEntity.setTypeOfUser(updatedUser.getTypeOfUser());
 
         }
+
+        logger.info("User " + userEntity.getUsername() + " updated by PO " + userEntityPO.getUsername());
         return userDao.update(userEntity);
 
     }
@@ -230,6 +237,7 @@ public class UserBean implements Serializable {
         if (updatedUser.getPassword() != null){
             userEntity.setPassword(updatedUser.getPassword());
     }
+        logger.info("User " + userEntity.getUsername() + " updated");
             return userDao.update(userEntity);
 
     }
@@ -274,6 +282,7 @@ public class UserBean implements Serializable {
         }
 
         User u = convertUserEntityToDto(userEntity);
+        logger.info("User " + userEntity.getUsername() + " updated");
         return u;
 
     }
@@ -285,6 +294,7 @@ public class UserBean implements Serializable {
         }
         refreshUserToken(userEntity.getUsername());
         userEntity.setPassword(encryptHelper.encryptPassword(newPassword));
+        logger.info("User " + userEntity.getUsername() + " updated password");
         return userDao.update(userEntity);
     }
 
@@ -308,7 +318,7 @@ public class UserBean implements Serializable {
             status = false;
         }
 
-
+        logger.info("User " + userEntity.getUsername() + " updated role to " + newRole);
         return status;
     }
 
@@ -454,6 +464,7 @@ public class UserBean implements Serializable {
                         user.getUsername(),
                         "http://localhost:3000/auth/define-password/verify/" + confirmationToken);
 
+                logger.info("User " + user.getUsername() + " registered by PO " + userEntityPO.getUsername());
                 return true;
             } else
                 return false;
@@ -566,6 +577,7 @@ public class UserBean implements Serializable {
             userEntity.setIsActive(false);
             wasRemoved =  userDao.update(userEntity);
         }
+        logger.info("User " + userEntity.getUsername() + " removed");
         return wasRemoved;
     }
     public boolean restoreUser(String username){
@@ -575,6 +587,7 @@ public class UserBean implements Serializable {
             userEntity.setIsActive(true);
             wasRemoved =  userDao.update(userEntity);
         }
+        logger.info("User " + userEntity.getUsername() + " restored");
         return wasRemoved;
     }
 
@@ -582,6 +595,7 @@ public class UserBean implements Serializable {
         UserEntity userEntity = userDao.findUserByUsername(username);
         ArrayList<TaskEntity> tasks = taskDao.findTasksByUser(userEntity);
         ArrayList<CategoryEntity> categories = categoryDao.findCategoriesByUser(userEntity);
+        ArrayList<MessageEntity> messages = (ArrayList<MessageEntity>) messageDao.findMessagesByUser(userEntity.getUsername());
 
         boolean wasRemoved=false;
         if (userEntity != null && !userEntity.getUsername().equals("deletedUser") && !userEntity.getUsername().equals("admin")) {
@@ -598,10 +612,17 @@ public class UserBean implements Serializable {
                 }
             }
 
+            if (messages != null) {
+                for (MessageEntity message : messages) {
+                    messageDao.remove(message);
+                }
+            }
+
             userEntity.setIsActive(false);
             userDao.remove(userEntity);
             wasRemoved = true;
         }
+        logger.info("User " + userEntity.getUsername() + " deleted permanently");
         return wasRemoved;
     }
     public boolean logoutUser(String token){
@@ -611,7 +632,7 @@ public class UserBean implements Serializable {
             wasRemovedToken = userDao.removedToken(userEntity);
             userEntity.setTokenValidity(null);
         }
-
+        logger.info("User " + userEntity.getUsername() + " logged out");
         return wasRemovedToken;
     }
 
